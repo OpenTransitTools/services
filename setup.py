@@ -15,7 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'pyramid_tm',
     'transaction',
-    #'gtfsdb',
+    'gtfsdb',
     'psycopg2',
     'simplejson',
 ]
