@@ -15,7 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'pyramid_tm',
     'transaction',
-    'gtfsdb',
+    #'gtfsdb',
     'psycopg2',
     'simplejson',
 ]
@@ -60,7 +60,7 @@ setup(
     test_suite="ott.service.tests",
     entry_points="""\
         [paste.app_factory]
-        main = test:main
+        main = ott.service.app:main
         [console_scripts]
         initialize_test_db = ott.service.scripts.initializedb:main
     """,
