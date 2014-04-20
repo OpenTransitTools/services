@@ -8,13 +8,8 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'pyramid',
-    'pyramid_beaker',
     'waitress',
     'ott.db',
-    'gtfsdb',
-    'psycopg2',
-    'sqlalchemy<0.9.0',
-    'zope.sqlalchemy',
     'pyramid_tm',
     'transaction',
     'simplejson',
@@ -22,8 +17,6 @@ requires = [
 
 extras_require = dict(
     dev=[],
-    geo=['geoalchemy>=0.6'],
-    postgresql=['psycopg2>=2.4.2'],
 )
 
 #
@@ -34,7 +27,7 @@ if sys.version_info[:2] < (2, 7):
 
 
 setup(
-    name='ott.service',
+    name='ott.services',
     version='0.1.0',
     description='Open Transit Tools - Web API / Controller',
     long_description=README + '\n\n' + CHANGES,
@@ -56,13 +49,10 @@ setup(
     install_requires=requires,
     extras_require=extras_require,
     tests_require=requires,
-    test_suite="ott.service.tests",
+    test_suite="ott.services.tests",
     entry_points="""\
         [paste.app_factory]
-        main = ott.service.app:main
+        main = ott.services.pyramid.app:main
         [console_scripts]
-        initialize_test_db = ott.service.scripts.initializedb:main
     """,
-        #initialize_test_db = test.scripts.initializedb:main
-        #main = ott.service.pyramid.app:main
 )

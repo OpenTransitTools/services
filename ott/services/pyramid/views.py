@@ -1,8 +1,9 @@
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view     import view_config
 
-from ott.json.stop_response import StopResponse
+from ott.data.json.stop_response import StopResponse
 from .app import gdb
+
 
 @view_config(route_name='home', renderer='json')
 def my_view(request):
