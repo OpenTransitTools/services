@@ -1,5 +1,5 @@
-service
-=======
+services
+========
 
 web services for transit (in python & pyramid)
 
