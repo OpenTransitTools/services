@@ -10,20 +10,19 @@ requires = [
     'pyramid',
     'pyramid_beaker',
     'waitress',
+    'ott.db',
+    'gtfsdb',
+    'psycopg2',
     'sqlalchemy<0.9.0',
-    'geoalchemy',
     'zope.sqlalchemy',
     'pyramid_tm',
     'transaction',
-    'gtfsdb',
-    'psycopg2',
     'simplejson',
 ]
 
 extras_require = dict(
     dev=[],
     geo=['geoalchemy>=0.6'],
-    oracle=['cx_oracle>=5.1'],
     postgresql=['psycopg2>=2.4.2'],
 )
 
