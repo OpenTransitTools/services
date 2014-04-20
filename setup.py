@@ -10,6 +10,7 @@ requires = [
     'pyramid',
     'waitress',
     'ott.data',
+    'ott.utils',
     'pyramid_tm',
     'transaction',
     'simplejson',
