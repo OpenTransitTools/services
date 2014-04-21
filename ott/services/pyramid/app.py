@@ -1,17 +1,22 @@
+import logging
+log = logging.getLogger(__file__)
+
 from pyramid.config import Configurator
 from gtfsdb import Database
 
+import ott.utils.object_utils as obj
+
 # database
-gdb = None
+DB = None
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    global gdb
-    config = Configurator(settings=settings)
-    gdb = Database(url="sqlite:///gtfs.db")
-    #gdb = Database(url="postgresql://geoserve@127.0.0.1:5432/trimet", schema="otz")
+    import pdb; pdb.set_trace()
+    global DB
+    DB = connect(settings)
 
+    config = Configurator(settings=settings)
     do_view_config(config)
     config.scan()
     return config.make_wsgi_app()
@@ -35,5 +40,13 @@ def do_view_config(cfg):
 
     cfg.add_route('routes',        '/routes')
     #cfg.add_route('route_stops',   '/route_stops')
+
+
+def connect(settings):
+    u = obj.safe_dict_val(settings, 'sqlalchemy.url'),
+    s = obj.safe_dict_val(settings, 'sqlalchemy.schema'),
+    g = obj.safe_dict_val(settings, 'sqlalchemy.is_spatial', False)
+    log.info("Database(url={0}, schema={1}, is_spatial={2})".format(u, s, g))
+    return Database(url=u, schema=s, is_spatial=g)
 
 

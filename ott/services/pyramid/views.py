@@ -1,13 +1,15 @@
+import logging
+log = logging.getLogger(__file__)
+
 from pyramid.response import Response
 from pyramid.view     import view_config
 
-from ott.data.json.response_base import ResponseBase
-from ott.data.json.stop_response import StopResponse
-from ott.data.json.route_response import RouteListResponse
+from ott.data.dao.response_base import ResponseBase
+from ott.data.dao.stop_response import StopResponse
+from ott.data.dao.route_response import RouteListResponse
 from ott.utils.parse.stop_param_parser import StopParamParser
 
-from .app import gdb
-
+from app import DB
 
 
 ### cache time - affects how long varnish cache will hold a copy of the data
@@ -20,9 +22,10 @@ err_msg = ResponseBase.obj_to_json({'error':'True', 'msg':'System error'})
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
 def routes(request):
     try:
-        routes = RouteListResponse.route_list(gdb.session)
+        routes = RouteListResponse.route_list(DB.session)
         return json_response(routes.to_json())
-    except:
+    except Exception, e:
+        log.warn(e)
         return json_response(err_msg, status=500)
 
 
@@ -30,9 +33,10 @@ def routes(request):
 def stop(request):
     try:
         sp = StopParamParser(request)
-        s = StopResponse.from_stop_id(sp.stop_id, gdb.session)
+        s = StopResponse.from_stop_id(sp.stop_id, DB.session)
         return json_response(s.to_json())
-    except:
+    except Exception, e:
+        log.warn(e)
         return json_response(err_msg, status=500)
 
 
