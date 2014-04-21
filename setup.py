@@ -11,6 +11,7 @@ requires = [
     'waitress',
     'ott.data',
     'ott.utils',
+    'ott.otp_client',
     'pyramid_tm',
     'transaction',
     'simplejson',
@@ -40,7 +41,14 @@ setup(
     ],
     author="Open Transit Tools",
     author_email="info@opentransittools.org",
-    dependency_links=('http://opentransittools.com',),
+
+    dependency_links = [
+        'git+https://github.com/OpenTransitTools/otp_client_py.git#egg=ott.otp_client-0.1.0',
+        'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
+        'git+https://github.com/OpenTransitTools/data.git#egg=ott.data-0.1.0',
+        'hg+https://code.google.com/p/gtfsdb/#egg=gtfsdb-0.1.6',
+    ],
+
     license="Mozilla-derived (http://opentransittools.com)",
     url='http://opentransittools.com',
     keywords='ott, otp, services, transit',
