@@ -8,9 +8,10 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     global gdb
+    config = Configurator(settings=settings)
     gdb = Database(url="sqlite:///gtfs.db")
     #gdb = Database(url="postgresql://geoserve@127.0.0.1:5432/trimet", schema="otz")
-    config = Configurator(settings=settings)
+
     do_view_config(config)
     config.scan()
     return config.make_wsgi_app()
