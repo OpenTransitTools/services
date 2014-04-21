@@ -12,7 +12,7 @@ DB = None
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     global DB
     DB = connect(settings)
 
@@ -43,8 +43,8 @@ def do_view_config(cfg):
 
 
 def connect(settings):
-    u = obj.safe_dict_val(settings, 'sqlalchemy.url'),
-    s = obj.safe_dict_val(settings, 'sqlalchemy.schema'),
+    u = obj.safe_dict_val(settings, 'sqlalchemy.url')
+    s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
     g = obj.safe_dict_val(settings, 'sqlalchemy.is_spatial', False)
     log.info("Database(url={0}, schema={1}, is_spatial={2})".format(u, s, g))
     return Database(url=u, schema=s, is_spatial=g)
