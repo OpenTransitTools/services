@@ -12,6 +12,7 @@ from ott.data.dao.route_dao import RouteListDao
 
 from ott.utils.parse.stop_param_parser import StopParamParser
 from ott.utils.parse.route_param_parser import RouteParamParser
+from ott.utils import html_utils
 
 from app import DB
 
@@ -65,7 +66,12 @@ def stop(request):
         return json_response(system_err_msg, status=500)
 
 
-
+@view_config(route_name='testdb', renderer='text/plain', http_cache=0)
+def testdb(request):
+    from ott.data.tests import load_routines
+    num = html_utils.get_first_param_as_int(request, 'end', 300)
+    out = load_routines.stops(num, DB.session)
+    return Response(out, content_type='text/plain')
 
 def json_response(json_data, mime='application/json', status=200):
     ''' @return Response() with content_type of 'application/json' '''

@@ -42,6 +42,8 @@ def do_view_config(cfg):
     cfg.add_route('routes',        '/routes')
     #cfg.add_route('route_stops',   '/route_stops')
 
+    cfg.add_route('testdb',        '/testdb')
+
 
 def connect(settings):
     u = obj.safe_dict_val(settings, 'sqlalchemy.url')
