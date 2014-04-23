@@ -2,12 +2,12 @@ import logging
 log = logging.getLogger(__file__)
 
 from pyramid.config import Configurator
-from gtfsdb import Database
-
 import ott.utils.object_utils as obj
+
 
 # database
 DB = None
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -50,6 +50,34 @@ def connect(settings):
     s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
     g = obj.safe_dict_val(settings, 'sqlalchemy.is_spatial', False)
     log.info("Database(url={0}, schema={1}, is_spatial={2})".format(u, s, g))
-    return Database(url=u, schema=s, is_spatial=g)
+    return MyGtfsdb(url=u, schema=s, is_spatial=g)
 
+
+from gtfsdb import Database
+class MyGtfsdb(Database):
+
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, val):
+        log.warn("creating a gtfsdb @ {0}".format(val))
+        self._url = val
+
+        # create / config the session
+        from zope.sqlalchemy import ZopeTransactionExtension
+        from sqlalchemy.orm import scoped_session
+        from sqlalchemy.orm import sessionmaker
+        self.session = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+
+        # create the engine
+        from sqlalchemy import create_engine
+        self.engine = create_engine(val)
+        self.session.configure(bind=self.engine)
+        from gtfsdb.model.base import Base
+        Base.metadata.bind = self.engine
+
+        if self.is_sqlite:
+            self.engine.connect().connection.connection.text_factory = str
 
