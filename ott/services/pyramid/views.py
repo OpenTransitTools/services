@@ -132,7 +132,6 @@ def rollback_session(session):
 
 def close_session(session):
     ''' close session '''
-
     if session:
         try:
             session.commit()
