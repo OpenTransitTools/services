@@ -7,14 +7,16 @@ README = open(os.path.join(here, 'README.md')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
-    'pyramid',
-    'waitress',
+    'CherryPy',
     'ott.data',
     'ott.utils',
     'ott.otp_client',
+    'simplejson',
+
+    'pyramid',
+    'waitress',
     'pyramid_tm',
     'transaction',
-    'simplejson',
 ]
 
 extras_require = dict(
