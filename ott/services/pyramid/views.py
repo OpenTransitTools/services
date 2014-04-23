@@ -27,57 +27,87 @@ data_not_found = BaseDao.obj_to_json({'error':'True', 'msg':'Data not found'})
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):
+    ret_val = None
     session = None
     try:
         session = DB.session()
         rp = RouteParamParser(request)
         r = RouteDao.from_route_id(rp.route_id, session)
-        return json_response(r.to_json())
+        ret_val = json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
-        rollback_session(session)
-        return json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found, status=500)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        return json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg, status=500)
     finally:
         close_session(session)
+
+    return ret_val
 
 
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
 def routes(request):
+    ret_val = None
+    session = None
     try:
         r = RouteListDao.route_list(DB.session)
-        return json_response(r.to_json())
+        ret_val = json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
-        return json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found, status=500)
     except Exception, e:
         log.warn(e)
-        return json_response(system_err_msg, status=500)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
+    return ret_val
 
 
 @view_config(route_name='stop', renderer='json', http_cache=cache_long)
 def stop(request):
+    ret_val = None
+    session = None
     try:
         sp = StopParamParser(request)
         s = StopDao.from_stop_id(sp.stop_id, DB.session)
-        return json_response(s.to_json())
+        ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
-        return json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found, status=500)
     except Exception, e:
         log.warn(e)
-        return json_response(system_err_msg, status=500)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
+    return ret_val
 
 
 @view_config(route_name='testdb', renderer='text/plain', http_cache=0)
 def testdb(request):
-    from ott.data.tests import load_routines
-    num = html_utils.get_first_param_as_int(request, 'end', 300)
-    out = load_routines.stops(num, DB.session)
+    out = None
+    session = None
+    try:
+        from ott.data.tests import load_routines
+        num = html_utils.get_first_param_as_int(request, 'end', 300)
+        out = load_routines.stops(num, DB.session)
+    except NoResultFound, e:
+        log.warn(e)
+        out = "Nothing found..."
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        out = "Crazy exception {0}".format(e)
+    finally:
+        close_session(session)
+
     return Response(out, content_type='text/plain')
+
 
 def json_response(json_data, mime='application/json', status=200):
     ''' @return Response() with content_type of 'application/json' '''
@@ -92,21 +122,24 @@ def json_response_list(lst, mime='application/json', status=200):
     return json_response(json_data, mime, status)
 
 def rollback_session(session):
-    ''' close session '''
-    try:
-        session.rollback()
-    except Exception, e:
-        log.info('ROLLBACK SESSION {0}'.format(e))
-        pass
+    ''' rollback session '''
+    if session:
+        try:
+            session.rollback()
+        except Exception, e:
+            log.info('ROLLBACK SESSION {0}'.format(e))
+            pass
 
 def close_session(session):
     ''' close session '''
-    try:
-        session.commit()
-        session.flush()
-        session.close()
-    except Exception, e:
-        log.info('CLOSE SESSION {0}'.format(e))
-        pass
+
+    if session:
+        try:
+            session.commit()
+            session.flush()
+            session.close()
+        except Exception, e:
+            log.info('CLOSE SESSION {0}'.format(e))
+            pass
 
 
