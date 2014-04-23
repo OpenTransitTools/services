@@ -27,16 +27,22 @@ data_not_found = BaseDao.obj_to_json({'error':'True', 'msg':'Data not found'})
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):
+    session = None
     try:
+        session = DB.session()
         rp = RouteParamParser(request)
-        r = RouteDao.from_route_id(rp.route_id, DB.session)
+        r = RouteDao.from_route_id(rp.route_id, session)
         return json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
+        rollback_session(session)
         return json_response(data_not_found, status=500)
     except Exception, e:
         log.warn(e)
+        rollback_session(session)
         return json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
 
 
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
@@ -84,3 +90,23 @@ def json_response_list(lst, mime='application/json', status=200):
         jd = l.to_json()
         json_data.append(jd)
     return json_response(json_data, mime, status)
+
+def rollback_session(session):
+    ''' close session '''
+    try:
+        session.rollback()
+    except Exception, e:
+        log.info('ROLLBACK SESSION {0}'.format(e))
+        pass
+
+def close_session(session):
+    ''' close session '''
+    try:
+        session.commit()
+        session.flush()
+        session.close()
+    except Exception, e:
+        log.info('CLOSE SESSION {0}'.format(e))
+        pass
+
+

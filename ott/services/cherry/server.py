@@ -38,7 +38,8 @@ class OttServer(object):
                 pass
         finally:
             try:
-                session.rollback()
+                session.commit()
+                session.close()
             except:
                 pass
             print "in finally"
