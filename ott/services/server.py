@@ -27,5 +27,6 @@ class OttServer(object):
         out = load_routines.stops(num, self.db.session)
         return out
 
+cherrypy.config.update('config/server.ini')
 cherrypy.quickstart(OttServer())
 
