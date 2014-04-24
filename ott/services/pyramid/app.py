@@ -40,9 +40,9 @@ def do_view_config(cfg):
 
     cfg.add_route('route',         '/route')
     cfg.add_route('routes',        '/routes')
-    #cfg.add_route('route_stops',   '/route_stops')
+    cfg.add_route('route_stops',   '/route_stops')
 
-    cfg.add_route('testdb',        '/testdb')
+    cfg.add_route('stress',        '/stress')
 
 
 def connect(settings):

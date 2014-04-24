@@ -9,6 +9,7 @@ from ott.data.dao.base_dao import BaseDao
 from ott.data.dao.stop_dao import StopDao
 from ott.data.dao.route_dao import RouteDao
 from ott.data.dao.route_dao import RouteListDao
+from ott.data.dao.route_stop_dao import RouteStopDao 
 
 from ott.utils.parse.stop_param_parser import StopParamParser
 from ott.utils.parse.route_param_parser import RouteParamParser
@@ -52,8 +53,30 @@ def routes(request):
     ret_val = None
     session = None
     try:
-        r = RouteListDao.route_list(DB.session)
+        session = DB.session()
+        r = RouteListDao.route_list(session)
         ret_val = json_response(r.to_json())
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = json_response(data_not_found, status=500)
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
+    return ret_val
+
+@view_config(route_name='route_stops', renderer='json', http_cache=cache_long)
+def route_stops(request):
+    ret_val = None
+    session = None
+    try:
+        session = DB.session()
+        sp = StopParamParser(request)
+        rs = RouteStopDao.stops_for_route_dir(sp.route_id, sp.direction_id, session)
+        ret_val = json_response(rs.to_json())
     except NoResultFound, e:
         log.warn(e)
         ret_val = json_response(data_not_found, status=500)
@@ -72,8 +95,9 @@ def stop(request):
     ret_val = None
     session = None
     try:
+        session = DB.session()
         sp = StopParamParser(request)
-        s = StopDao.from_stop_id(sp.stop_id, DB.session)
+        s = StopDao.from_stop_id(sp.stop_id, session)
         ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
@@ -88,14 +112,15 @@ def stop(request):
     return ret_val
 
 
-@view_config(route_name='testdb', renderer='text/plain', http_cache=0)
-def testdb(request):
+@view_config(route_name='stress', renderer='text/plain', http_cache=0)
+def stress(request):
     out = None
     session = None
     try:
         from ott.data.tests import load_routines
-        num = html_utils.get_first_param_as_int(request, 'end', 300)
-        out = load_routines.stops(num, DB.session)
+        session = DB.session()
+        num = html_utils.get_first_param_as_int(request, 'num', 300)
+        out = load_routines.stops(num, session)
     except NoResultFound, e:
         log.warn(e)
         out = "Nothing found..."
