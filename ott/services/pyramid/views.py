@@ -157,6 +157,7 @@ def rollback_session(session):
 
 def close_session(session):
     ''' close session '''
+    return # NOTE: Pyramid TM is doing the closing for us
     if session:
         try:
             session.commit()
