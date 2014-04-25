@@ -33,7 +33,7 @@ def route(request):
     try:
         session = DB.session()
         rp = RouteParamParser(request)
-        r = RouteDao.from_route_id(rp.route_id, session)
+        r = RouteDao.from_route_id(session, rp.route_id)
         ret_val = json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
@@ -75,7 +75,7 @@ def route_stops(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        rs = RouteStopDao.stops_for_route_dir(sp.route_id, sp.direction_id, session)
+        rs = RouteStopDao.from_route_direction(session, sp.route_id, sp.direction_id)
         ret_val = json_response(rs.to_json())
     except NoResultFound, e:
         log.warn(e)
@@ -97,7 +97,7 @@ def stop(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        s = StopDao.from_stop_id(sp.stop_id, session)
+        s = StopDao.from_stop_id(session, sp.stop_id)
         ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
