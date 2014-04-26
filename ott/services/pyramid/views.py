@@ -7,11 +7,13 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ott.data.dao.base_dao import BaseDao
 from ott.data.dao.stop_dao import StopDao
+from ott.data.dao.stop_dao import StopListDao
 from ott.data.dao.route_dao import RouteDao
 from ott.data.dao.route_dao import RouteListDao
 from ott.data.dao.route_stop_dao import RouteStopDao 
 
 from ott.utils.parse.stop_param_parser import StopParamParser
+from ott.utils.parse.geo_param_parser import GeoParamParser
 from ott.utils.parse.route_param_parser import RouteParamParser
 from ott.utils import html_utils
 
@@ -99,6 +101,28 @@ def stop(request):
         sp = StopParamParser(request)
         s = StopDao.from_stop_id(session, sp.stop_id)
         ret_val = json_response(s.to_json())
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = json_response(data_not_found, status=500)
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
+    return ret_val
+
+
+@view_config(route_name='stops_near', renderer='json', http_cache=cache_long)
+def stops_near(request):
+    ret_val = None
+    session = None
+    try:
+        session = DB.session()
+        gp = GeoParamParser(request)
+        sl = StopListDao.nearest_stops(session, geo_params=gp)
+        ret_val = json_response(sl.to_json())
     except NoResultFound, e:
         log.warn(e)
         ret_val = json_response(data_not_found, status=500)
