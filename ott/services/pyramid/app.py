@@ -35,7 +35,7 @@ def do_view_config(cfg):
     #cfg.add_route('solr',          '/solr')
 
     cfg.add_route('stop',          '/stop')
-    #cfg.add_route('stop_schedule', '/stop_schedule')
+    cfg.add_route('stop_schedule', '/stop_schedule')
     cfg.add_route('stops_near',    '/stops_near')
 
     cfg.add_route('route',         '/route')

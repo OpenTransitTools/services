@@ -136,6 +136,29 @@ def stops_near(request):
     return ret_val
 
 
+@view_config(route_name='stop_schedule', renderer='json', http_cache=cache_short)
+def stop_schedule(request):
+    ret_val = None
+    session = None
+    try:
+        session = DB.session()
+        sp = StopParamParser(request)
+        s = StopDao.from_stop_id(session, sp.stop_id)
+        ret_val = json_response(s.to_json())
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = json_response(data_not_found, status=500)
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
+    return ret_val
+
+
+
 @view_config(route_name='stress', renderer='text/plain', http_cache=0)
 def stress(request):
     out = None
