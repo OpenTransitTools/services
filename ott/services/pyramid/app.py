@@ -45,12 +45,25 @@ def do_view_config(cfg):
     cfg.add_route('stress',        '/stress')
 
 
-def connect(settings):
+def olconnect(settings):
     u = obj.safe_dict_val(settings, 'sqlalchemy.url')
     s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
-    g = obj.safe_dict_val(settings, 'sqlalchemy.is_spatial', False)
-    log.info("Database(url={0}, schema={1}, is_spatial={2})".format(u, s, g))
-    return MyGtfsdb(url=u, schema=s, is_spatial=g)
+    g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
+    log.info("Database(url={0}, schema={1}, is_geospatial={2})".format(u, s, g))
+    #import pdb; pdb.set_trace()
+    return MyGtfsdb(url=u, schema=s, is_geospatial=g)
+
+def pyramid_to_gtfsd_params(settings):
+    u = obj.safe_dict_val(settings, 'sqlalchemy.url')
+    s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
+    g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
+    return {'url':u, 'schema':s, 'is_geospatial':g}
+
+def connect(settings):
+    #import pdb; pdb.set_trace()
+    s=to_gtfsd_params(settings)
+    log.info("Database({})".format(s))
+    return MyGtfsdb(**s)
 
 
 from gtfsdb import Database
