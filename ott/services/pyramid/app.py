@@ -16,10 +16,6 @@ def main(global_config, **settings):
     global DB
     DB = connect(settings)
 
-    from m import m
-    m(DB.session)
-
-
     config = Configurator(settings=settings)
     do_view_config(config)
     config.scan()

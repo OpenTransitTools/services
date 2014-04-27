@@ -15,6 +15,8 @@ from ott.data.dao.route_stop_dao import RouteStopDao
 from ott.utils.parse.stop_param_parser import StopParamParser
 from ott.utils.parse.geo_param_parser import GeoParamParser
 from ott.utils.parse.route_param_parser import RouteParamParser
+from ott.data.dao.stop_schedule_dao import StopScheduleDao
+
 from ott.utils import html_utils
 
 from app import DB
@@ -143,7 +145,7 @@ def stop_schedule(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        s = StopDao.from_stop_id(session, sp.stop_id)
+        s = StopScheduleDao.get_stop_schedule(session, sp.stop_id)
         ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
@@ -158,7 +160,7 @@ def stop_schedule(request):
     return ret_val
 
 
-@view_config(route_name='', renderer='json', http_cache=cache_short)
+@view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
 def plan_trip(request):
     ret_val = None
     return ret_val
