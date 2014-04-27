@@ -158,6 +158,11 @@ def stop_schedule(request):
     return ret_val
 
 
+@view_config(route_name='', renderer='json', http_cache=cache_short)
+def plan_trip(request):
+    ret_val = None
+    return ret_val
+
 
 @view_config(route_name='stress', renderer='text/plain', http_cache=0)
 def stress(request):

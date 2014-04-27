@@ -16,6 +16,10 @@ def main(global_config, **settings):
     global DB
     DB = connect(settings)
 
+    from m import m
+    m(DB.session)
+
+
     config = Configurator(settings=settings)
     do_view_config(config)
     config.scan()
@@ -27,7 +31,8 @@ def do_view_config(cfg):
         TODO: is there a better way to dot this (maybe via an .ini file)
     '''
     #cfg.add_route('index',         '/')
-    #cfg.add_route('plan_trip',     '/plan_trip')
+
+    cfg.add_route('plan_trip',     '/plan_trip')
     #cfg.add_route('adverts',       '/adverts')
 
     #cfg.add_route('geocode',       '/geocode')
@@ -35,8 +40,8 @@ def do_view_config(cfg):
     #cfg.add_route('solr',          '/solr')
 
     cfg.add_route('stop',          '/stop')
-    cfg.add_route('stop_schedule', '/stop_schedule')
     cfg.add_route('stops_near',    '/stops_near')
+    cfg.add_route('stop_schedule', '/stop_schedule')
 
     cfg.add_route('route',         '/route')
     cfg.add_route('routes',        '/routes')
@@ -53,7 +58,7 @@ def olconnect(settings):
     #import pdb; pdb.set_trace()
     return MyGtfsdb(url=u, schema=s, is_geospatial=g)
 
-def pyramid_to_gtfsd_params(settings):
+def pyramid_to_gtfsdb_params(settings):
     u = obj.safe_dict_val(settings, 'sqlalchemy.url')
     s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
     g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
@@ -61,7 +66,7 @@ def pyramid_to_gtfsd_params(settings):
 
 def connect(settings):
     #import pdb; pdb.set_trace()
-    s=to_gtfsd_params(settings)
+    s=pyramid_to_gtfsdb_params(settings)
     log.info("Database({})".format(s))
     return MyGtfsdb(**s)
 
