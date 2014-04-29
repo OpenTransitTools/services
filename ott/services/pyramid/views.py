@@ -163,6 +163,20 @@ def stop_schedule(request):
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
 def plan_trip(request):
     ret_val = None
+    session = None
+    try:
+        tp = TripParamParser(request)
+        ret_val = json_response(trip.to_json())
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = json_response(data_not_found, status=500)
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = json_response(system_err_msg, status=500)
+    finally:
+        close_session(session)
+
     return ret_val
 
 

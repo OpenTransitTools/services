@@ -10,6 +10,7 @@ requires = [
     'CherryPy',
     'ott.data',
     'ott.utils',
+    'ott.geocoder',
     'ott.otp_client',
     'simplejson',
 
@@ -46,6 +47,7 @@ setup(
 
     dependency_links = [
         'git+https://github.com/OpenTransitTools/otp_client_py.git#egg=ott.otp_client-0.1.0',
+        'git+https://github.com/OpenTransitTools/geocoder.git#egg=ott.geocoder-0.1.0',
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
         'git+https://github.com/OpenTransitTools/data.git#egg=ott.data-0.1.0',
         'hg+https://code.google.com/p/gtfsdb/#egg=gtfsdb-0.1.6',
