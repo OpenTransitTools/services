@@ -39,21 +39,21 @@ def route(request):
     ret_val = None
     session = None
     try:
+        #import pdb; pdb.set_trace()
         session = DB.session()
         rp = RouteParamParser(request)
-        r = RouteDao.from_route_id(session, rp.route_id)
-        ret_val = json_response(r.to_json())
+        ret_val = RouteDao.from_route_id(session, rp.route_id)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
@@ -62,19 +62,19 @@ def routes(request):
     session = None
     try:
         session = DB.session()
-        r = RouteListDao.route_list(session)
-        ret_val = json_response(r.to_json())
+        ret_val = RouteListDao.route_list(session)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
+
 
 @view_config(route_name='route_stops', renderer='json', http_cache=cache_long)
 def route_stops(request):
@@ -83,19 +83,18 @@ def route_stops(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        rs = RouteStopDao.from_route_direction(session, sp.route_id, sp.direction_id)
-        ret_val = json_response(rs.to_json())
+        ret_val = RouteStopDao.from_route_direction(session, sp.route_id, sp.direction_id)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='stop', renderer='json', http_cache=cache_long)
@@ -105,19 +104,18 @@ def stop(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        s = StopDao.from_stop_id(session, sp.stop_id)
-        ret_val = json_response(s.to_json())
+        ret_val = StopDao.from_stop_id(session, sp.stop_id)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='stops_near', renderer='json', http_cache=cache_long)
@@ -127,19 +125,18 @@ def stops_near(request):
     try:
         session = DB.session()
         gp = GeoParamParser(request)
-        sl = StopListDao.nearest_stops(session, geo_params=gp)
-        ret_val = json_response(sl.to_json())
+        ret_val = StopListDao.nearest_stops(session, geo_params=gp)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='stop_schedule', renderer='json', http_cache=cache_short)
@@ -149,19 +146,18 @@ def stop_schedule(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        s = StopScheduleDao.get_stop_schedule(session, sp.stop_id)
-        ret_val = json_response(s.to_json())
+        ret_val = StopScheduleDao.get_stop_schedule(session, sp.stop_id)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
@@ -169,55 +165,47 @@ def plan_trip(request):
     ret_val = None
     session = None
     try:
-        tp = TripParamParser(request)
-        ret_val = json_response(trip.to_json())
+        ret_val = TripParamParser(request)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         close_session(session)
 
-    return ret_val
+    return dao_response(ret_val)
 
 
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
 def geocode(request):
     ret_val = None
     try:
-        import pdb; pdb.set_trace()
         place = request.params.get('place')
-        gc = SOLR.geocode(place)
-        ret_val = gc.to_json()
-    except NoResultFound, e:
-        #TODO ... ^^^^ need SOLR not found 
+        ret_val = SOLR.geocode(place)
+    except IndexError, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = data_not_found
     except Exception, e:
         log.warn(e)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = system_err_msg
     finally:
         pass
 
-    return ret_val
+    return dao_response(ret_val)
+
 
 @view_config(route_name='geostr', renderer='string', http_cache=cache_long)
 def geostr(request):
     ret_val = None
     try:
         place = request.params.get('place')
-        gc = SOLR.geostr(place)
-        ret_val = gc
-    except NoResultFound, e:
-        #TODO ... ^^^^ need SOLR not found 
-        log.warn(e)
-        ret_val = json_response(data_not_found.status_message, status=data_not_found.status_code)
+        ret_val = SOLR.geostr(place)
     except Exception, e:
         log.warn(e)
-        ret_val = json_response(system_err_msg.status_message, status=system_err_msg.status_code)
+        ret_val = system_err_msg.status_message
     finally:
         pass
 
@@ -229,15 +217,15 @@ def solr(request):
     ret_val = None
     try:
         place = request.params.get('place')
-        gc = SOLR.solr(place)
-        ret_val = gc
-    except NoResultFound, e:
-        #TODO ... ^^^^ need SOLR not found 
+        rows  = request.params.get('rows')
+        s = SOLR.solr(place, rows)
+        ret_val = s
+    except IndexError, e:
         log.warn(e)
-        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+        ret_val = dao_response(data_not_found)
     except Exception, e:
         log.warn(e)
-        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+        ret_val = dao_response(system_err_msg)
     finally:
         pass
 
@@ -265,6 +253,10 @@ def stress(request):
 
     return Response(out, content_type='text/plain')
 
+
+def dao_response(dao):
+    ''' using a BaseDao object, send the data to a pyramid Reponse '''
+    return json_response(json_data=dao.to_json(), status=dao.status_code)
 
 def json_response(json_data, mime='application/json', status=200):
     ''' @return Response() with content_type of 'application/json' '''
