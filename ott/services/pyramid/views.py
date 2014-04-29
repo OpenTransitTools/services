@@ -5,7 +5,8 @@ from pyramid.response import Response
 from pyramid.view     import view_config
 from sqlalchemy.orm.exc import NoResultFound
 
-from ott.data.dao.base_dao import BaseDao
+from ott.data.dao.base_dao import DatabaseNotFound
+from ott.data.dao.base_dao import ServerError
 from ott.data.dao.stop_dao import StopDao
 from ott.data.dao.stop_dao import StopListDao
 from ott.data.dao.route_dao import RouteDao
@@ -16,18 +17,21 @@ from ott.utils.parse.stop_param_parser import StopParamParser
 from ott.utils.parse.geo_param_parser import GeoParamParser
 from ott.utils.parse.route_param_parser import RouteParamParser
 from ott.data.dao.stop_schedule_dao import StopScheduleDao
+from ott.geocoder.geosolr import GeoSolr
 
 from ott.utils import html_utils
 
 from app import DB
+from app import CONFIG
+SOLR = GeoSolr('http://maps.trimet.org/solr')
 
 
 ### cache time - affects how long varnish cache will hold a copy of the data
 cache_long=36000  # 10 hours
 cache_short=600   # 10 minutes
 
-system_err_msg = BaseDao.obj_to_json({'error':'True', 'msg':'System error'})
-data_not_found = BaseDao.obj_to_json({'error':'True', 'msg':'Data not found'})
+system_err_msg = ServerError()
+data_not_found = DatabaseNotFound()
 
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
@@ -41,11 +45,11 @@ def route(request):
         ret_val = json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -62,11 +66,11 @@ def routes(request):
         ret_val = json_response(r.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -83,11 +87,11 @@ def route_stops(request):
         ret_val = json_response(rs.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -105,11 +109,11 @@ def stop(request):
         ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -127,11 +131,11 @@ def stops_near(request):
         ret_val = json_response(sl.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -149,11 +153,11 @@ def stop_schedule(request):
         ret_val = json_response(s.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
 
@@ -169,13 +173,73 @@ def plan_trip(request):
         ret_val = json_response(trip.to_json())
     except NoResultFound, e:
         log.warn(e)
-        ret_val = json_response(data_not_found, status=500)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
     except Exception, e:
         log.warn(e)
         rollback_session(session)
-        ret_val = json_response(system_err_msg, status=500)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
     finally:
         close_session(session)
+
+    return ret_val
+
+
+@view_config(route_name='geocode', renderer='json', http_cache=cache_long)
+def geocode(request):
+    ret_val = None
+    try:
+        import pdb; pdb.set_trace()
+        place = request.params.get('place')
+        gc = SOLR.geocode(place)
+        ret_val = gc.to_json()
+    except NoResultFound, e:
+        #TODO ... ^^^^ need SOLR not found 
+        log.warn(e)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+    except Exception, e:
+        log.warn(e)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+    finally:
+        pass
+
+    return ret_val
+
+@view_config(route_name='geostr', renderer='string', http_cache=cache_long)
+def geostr(request):
+    ret_val = None
+    try:
+        place = request.params.get('place')
+        gc = SOLR.geostr(place)
+        ret_val = gc
+    except NoResultFound, e:
+        #TODO ... ^^^^ need SOLR not found 
+        log.warn(e)
+        ret_val = json_response(data_not_found.status_message, status=data_not_found.status_code)
+    except Exception, e:
+        log.warn(e)
+        ret_val = json_response(system_err_msg.status_message, status=system_err_msg.status_code)
+    finally:
+        pass
+
+    return ret_val
+
+
+@view_config(route_name='solr', renderer='json', http_cache=cache_long)
+def solr(request):
+    ret_val = None
+    try:
+        place = request.params.get('place')
+        gc = SOLR.solr(place)
+        ret_val = gc
+    except NoResultFound, e:
+        #TODO ... ^^^^ need SOLR not found 
+        log.warn(e)
+        ret_val = json_response(data_not_found.to_json(), status=data_not_found.status_code)
+    except Exception, e:
+        log.warn(e)
+        ret_val = json_response(system_err_msg.to_json(), status=system_err_msg.status_code)
+    finally:
+        pass
 
     return ret_val
 

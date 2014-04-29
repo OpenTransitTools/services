@@ -4,22 +4,22 @@ log = logging.getLogger(__file__)
 from pyramid.config import Configurator
 import ott.utils.object_utils as obj
 
-
 # database
 DB = None
-
+CONFIG = None
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     #import pdb; pdb.set_trace()
+    global CONFIG
     global DB
     DB = connect(settings)
 
-    config = Configurator(settings=settings)
-    do_view_config(config)
-    config.scan()
-    return config.make_wsgi_app()
+    CONFIG = Configurator(settings=settings)
+    do_view_config(CONFIG)
+    CONFIG.scan()
+    return CONFIG.make_wsgi_app()
 
 
 def do_view_config(cfg):
@@ -31,9 +31,9 @@ def do_view_config(cfg):
     cfg.add_route('plan_trip',     '/plan_trip')
     #cfg.add_route('adverts',       '/adverts')
 
-    #cfg.add_route('geocode',       '/geocode')
-    #cfg.add_route('geostr',        '/geostr')
-    #cfg.add_route('solr',          '/solr')
+    cfg.add_route('geocode',       '/geocode')
+    cfg.add_route('geostr',        '/geostr')
+    cfg.add_route('solr',          '/solr')
 
     cfg.add_route('stop',          '/stop')
     cfg.add_route('stops_near',    '/stops_near')
