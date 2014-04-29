@@ -66,6 +66,5 @@ setup(
     entry_points="""\
         [paste.app_factory]
         main = ott.services.pyramid.app:main
-        [console_scripts]
     """,
 )
