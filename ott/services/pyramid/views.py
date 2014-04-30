@@ -17,17 +17,14 @@ from ott.data.dao import StopScheduleDao
 from ott.utils.parse import StopParamParser
 from ott.utils.parse import GeoParamParser
 from ott.utils.parse import RouteParamParser
-from ott.utils.parse import TripParamParser
 
 from ott.geocoder.geosolr import GeoSolr
+from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import html_utils
 
-# GLOBAL VARS
 from app import DB
 from app import CONFIG
-
-SOLR = GeoSolr(CONFIG.get('solr_url'))
 
 ### cache time - affects how long varnish cache will hold a copy of the data
 cache_long=36000  # 10 hours
@@ -166,19 +163,17 @@ def stop_schedule(request):
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
 def plan_trip(request):
     ret_val = None
-    session = None
     try:
-        #import pdb; pdb.set_trace()
-        ret_val = TripParamParser(request)
+        import pdb; pdb.set_trace()
+        plan = get_planner().plan_trip(request)
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
     except Exception, e:
         log.warn(e)
-        rollback_session(session)
         ret_val = system_err_msg
     finally:
-        close_session(session)
+        pass
 
     return dao_response(ret_val)
 
@@ -188,7 +183,7 @@ def geocode(request):
     ret_val = None
     try:
         place = request.params.get('place')
-        ret_val = SOLR.geocode(place)
+        ret_val = get_solr().geocode(place)
     except IndexError, e:
         log.warn(e)
         ret_val = data_not_found
@@ -206,7 +201,7 @@ def geostr(request):
     ret_val = None
     try:
         place = request.params.get('place')
-        ret_val = SOLR.geostr(place)
+        ret_val = get_solr().geostr(place)
     except Exception, e:
         log.warn(e)
         ret_val = system_err_msg.status_message
@@ -222,7 +217,7 @@ def solr(request):
     try:
         place = request.params.get('place')
         rows  = request.params.get('rows')
-        s = SOLR.solr(place, rows)
+        s = get_solr().solr(place, rows)
         ret_val = s
     except IndexError, e:
         log.warn(e)
@@ -294,5 +289,21 @@ def close_session(session):
         except Exception, e:
             log.info('CLOSE SESSION {0}'.format(e))
             pass
+
+
+SOLR = None
+def get_solr():
+    global SOLR
+    if SOLR is None:
+        SOLR = GeoSolr(CONFIG.get('solr_url'))
+    return SOLR
+
+TRIP_PLANNER = None
+def get_planner():
+    global TRIP_PLANNER 
+    if TRIP_PLANNER is None:
+        TRIP_PLANNER = TripPlanner(solr_instance=get_solr())
+    return TRIP_PLANNER
+
 
 
