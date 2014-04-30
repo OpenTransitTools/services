@@ -5,26 +5,29 @@ from pyramid.response import Response
 from pyramid.view     import view_config
 from sqlalchemy.orm.exc import NoResultFound
 
-from ott.data.dao.base_dao import DatabaseNotFound
-from ott.data.dao.base_dao import ServerError
-from ott.data.dao.stop_dao import StopDao
-from ott.data.dao.stop_dao import StopListDao
-from ott.data.dao.route_dao import RouteDao
-from ott.data.dao.route_dao import RouteListDao
-from ott.data.dao.route_stop_dao import RouteStopDao 
+from ott.data.dao import DatabaseNotFound
+from ott.data.dao import ServerError
+from ott.data.dao import StopDao
+from ott.data.dao import StopListDao
+from ott.data.dao import RouteDao
+from ott.data.dao import RouteListDao
+from ott.data.dao import RouteStopDao 
+from ott.data.dao import StopScheduleDao
 
-from ott.utils.parse.stop_param_parser import StopParamParser
-from ott.utils.parse.geo_param_parser import GeoParamParser
-from ott.utils.parse.route_param_parser import RouteParamParser
-from ott.data.dao.stop_schedule_dao import StopScheduleDao
+from ott.utils.parse import StopParamParser
+from ott.utils.parse import GeoParamParser
+from ott.utils.parse import RouteParamParser
+from ott.utils.parse import TripParamParser
+
 from ott.geocoder.geosolr import GeoSolr
 
 from ott.utils import html_utils
 
+# GLOBAL VARS
 from app import DB
 from app import CONFIG
-SOLR = GeoSolr('http://maps.trimet.org/solr')
 
+SOLR = GeoSolr(CONFIG.get('solr_url'))
 
 ### cache time - affects how long varnish cache will hold a copy of the data
 cache_long=36000  # 10 hours
@@ -165,6 +168,7 @@ def plan_trip(request):
     ret_val = None
     session = None
     try:
+        #import pdb; pdb.set_trace()
         ret_val = TripParamParser(request)
     except NoResultFound, e:
         log.warn(e)

@@ -14,12 +14,13 @@ def main(global_config, **settings):
     #import pdb; pdb.set_trace()
     global CONFIG
     global DB
+    CONFIG = settings
     DB = connect(settings)
 
-    CONFIG = Configurator(settings=settings)
-    do_view_config(CONFIG)
-    CONFIG.scan()
-    return CONFIG.make_wsgi_app()
+    cfg = Configurator(settings=settings)
+    do_view_config(cfg)
+    cfg.scan()
+    return cfg.make_wsgi_app()
 
 
 def do_view_config(cfg):
@@ -63,7 +64,7 @@ def pyramid_to_gtfsdb_params(settings):
 def connect(settings):
     #import pdb; pdb.set_trace()
     s=pyramid_to_gtfsdb_params(settings)
-    log.info("Database({})".format(s))
+    log.info("Database({0})".format(s))
     return MyGtfsdb(**s)
 
 
