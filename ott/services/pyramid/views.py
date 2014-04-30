@@ -304,7 +304,8 @@ def get_planner():
     global TRIP_PLANNER 
     if TRIP_PLANNER is None:
         otp_url = CONFIG.get('otp_url')
-        TRIP_PLANNER = TripPlanner(otp_url=otp_url, solr_instance=get_solr())
+        advert_url = CONFIG.get('advert_url')
+        TRIP_PLANNER = TripPlanner(otp_url=otp_url, advert_url=advert_url, solr_instance=get_solr())
     return TRIP_PLANNER
 
 
