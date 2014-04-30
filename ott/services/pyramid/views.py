@@ -164,18 +164,19 @@ def stop_schedule(request):
 def plan_trip(request):
     ret_val = None
     try:
-        import pdb; pdb.set_trace()
-        plan = get_planner().plan_trip(request)
+        #import pdb; pdb.set_trace()
+        trip = get_planner().plan_trip(request)
+        ret_val = json_response(trip)
     except NoResultFound, e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = dao_response(data_not_found)
     except Exception, e:
         log.warn(e)
-        ret_val = system_err_msg
+        ret_val = dao_response(system_err_msg)
     finally:
         pass
 
-    return dao_response(ret_val)
+    return ret_val
 
 
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
@@ -302,7 +303,8 @@ TRIP_PLANNER = None
 def get_planner():
     global TRIP_PLANNER 
     if TRIP_PLANNER is None:
-        TRIP_PLANNER = TripPlanner(solr_instance=get_solr())
+        otp_url = CONFIG.get('otp_url')
+        TRIP_PLANNER = TripPlanner(otp_url=otp_url, solr_instance=get_solr())
     return TRIP_PLANNER
 
 
