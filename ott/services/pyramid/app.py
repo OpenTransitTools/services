@@ -76,9 +76,9 @@ class MyGtfsdb(Database):
         return self._url
 
     @url.setter
-    def url(self, val):
-        log.warn("creating a gtfsdb @ {0}".format(val))
-        self._url = val
+    def url(self, url):
+        log.warn("creating a gtfsdb @ {0}".format(url))
+        self._url = url
 
         # create / config the session
         from zope.sqlalchemy import ZopeTransactionExtension
@@ -88,7 +88,7 @@ class MyGtfsdb(Database):
 
         # create the engine
         from sqlalchemy import create_engine
-        self.engine = create_engine(val)
+        self.engine = create_engine(url)
         self.session.configure(bind=self.engine)
         from gtfsdb.model.base import Base
         Base.metadata.bind = self.engine
