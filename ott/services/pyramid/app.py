@@ -75,6 +75,22 @@ class MyGtfsdb(Database):
     def url(self):
         return self._url
 
+    @property
+    def schema(self):
+        return self._schema
+
+    @schema.setter
+    def schema(self, val):
+        self._schema = val
+        for cls in self.classes:
+            cls.__table__.schema = val
+
+        try:
+            from ott.data.gtfsrdb import model
+            model.add_schema(val)
+        except:
+            log.warn("gtfsrdb not available when trying to set schema {0}".format(val))
+
     @url.setter
     def url(self, url):
         log.warn("creating a gtfsdb @ {0}".format(url))
