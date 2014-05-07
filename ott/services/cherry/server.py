@@ -2,48 +2,52 @@ import cherrypy
 import logging
 log = logging.getLogger(__file__)
 
-from gtfsdb import Database
-from ott.services import cpdb
+from ott.geocoder.geosolr import GeoSolr
+from ott.otp_client.trip_planner import TripPlanner
+from ott.utils import html_utils
 
 class OttServer(object):
     def __init__(self):
-        u = "postgresql+psycopg2://geoserve@maps10.trimet.org:5432/trimet"
-        s = "otz"
-        g = True
-        log.info("Database(url={0}, schema={1}, is_spatial={2})".format(u, s, g))
-        #self.db = Database(url=u, schema=s, is_spatial=g)
-        self.db = cpdb.MyGtfsdb(url=u, schema=s, is_spatial=g)
+        pass
 
     @cherrypy.expose
-    #@cherrypy.tools.json_out()
-    @cherrypy.tools.response_headers(headers = [
-            ('Content-Type', 'text/plain'), 
-            ('Cache-Control', 'max-age=0')
-    ])
-    def index(self, num, poo="warm", **args):
-        session = None
+    @cherrypy.tools.json_out()
+    def plan_trip(self, **args):
+        ret_val = None
         try:
-            from ott.data.tests import load_routines
-            from ott.utils import html_utils
-            from ott.utils import num_utils
-            print poo
-            num = num_utils.to_int(num, 10)
-            session = self.db.get_session()
-            out = load_routines.stops(num, session)
-            return out
+            #import pdb; pdb.set_trace()
+            trip = get_planner().plan_trip(args)
+            ret_val = trip
         except Exception, e:
-            try:
-                session.rollback()
-            except:
-                pass
+            log.warn(e)
+            ret_val = {'e':'error'}
+            '''
+            except NoResultFound, e:
+                log.warn(e)
+                ret_val = dao_response(data_not_found)
+            except Exception, e:
+                log.warn(e)
+                ret_val = dao_response(system_err_msg)
+            '''
         finally:
-            try:
-                session.commit()
-                session.close()
-            except:
-                pass
-            print "in finally"
+            pass
+        return ret_val
 
-cherrypy.config.update('config/server.ini')
+SOLR = None
+def get_solr():
+    global SOLR
+    if SOLR is None:
+        SOLR = GeoSolr("http://maps10.trimet.org/solr")
+    return SOLR
+
+TRIP_PLANNER = None
+def get_planner():
+    global TRIP_PLANNER 
+    if TRIP_PLANNER is None:
+        otp_url = "http://maps10.trimet.org/prod"
+        advert_url = "http://trimet.org/map/adverts"
+        TRIP_PLANNER = TripPlanner(otp_url=otp_url, advert_url=advert_url, solr_instance=get_solr())
+    return TRIP_PLANNER
+
+cherrypy.config.update('config/production.ini')
 cherrypy.quickstart(OttServer())
-
