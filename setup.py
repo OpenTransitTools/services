@@ -7,17 +7,21 @@ README = open(os.path.join(here, 'README.md')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
-    'CherryPy',
     'ott.data',
     'ott.utils',
     'ott.geocoder',
     'ott.otp_client',
-    'simplejson',
 
+    'sqlalchemy == 0.8.6',
+    'geoalchemy>=0.6',
+    'gtfsdb',
+    'psycopg2',
+
+    #'CherryPy',
     'pyramid',
     'waitress',
     'pyramid_tm',
-    'transaction',
+    'zope.sqlalchemy',
 ]
 
 extras_require = dict(
