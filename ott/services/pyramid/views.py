@@ -11,7 +11,7 @@ from ott.data.dao import StopDao
 from ott.data.dao import StopListDao
 from ott.data.dao import RouteDao
 from ott.data.dao import RouteListDao
-from ott.data.dao import RouteStopDao 
+from ott.data.dao import RouteStopListDao 
 from ott.data.dao import StopScheduleDao
 
 from ott.utils.parse import StopParamParser
@@ -83,7 +83,7 @@ def route_stops(request):
     try:
         session = DB.session()
         sp = StopParamParser(request)
-        ret_val = RouteStopDao.from_route_direction(session, sp.route_id, sp.direction_id)
+        ret_val = RouteStopListDao.from_route(session, sp.route_id, sp.direction_id)
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
