@@ -5,6 +5,7 @@ import urllib
 import contextlib
 import json
 
+PORT="44444"
 
 class TestMyView(unittest.TestCase):
     def setUp(self):
@@ -75,9 +76,6 @@ class TestMyView(unittest.TestCase):
         self.assertRegexpMatches(s,"-122.71")
         self.assertRegexpMatches(s,"45.51")
 
-
-
-PORT="44444"
 def get_url(svc_name, params=None):
     ret_val = "http://localhost:{0}/{1}".format(PORT, svc_name)
     if params:
