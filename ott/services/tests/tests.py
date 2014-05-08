@@ -13,9 +13,6 @@ class TestMyView(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test(self):
-        pass
-
     def test_routes(self):
         url = get_url('routes')
         j = call_url(url)
