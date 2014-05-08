@@ -30,13 +30,26 @@ class TestMyView(unittest.TestCase):
         self.assertRegexpMatches(s,"MAX Blue")
 
     def test_rs(self):
-        url = get_url('route_stops', 'route_id=100&direction_id=0')
+        def asserts(j, s):
+            self.assertEqual(j['status_code'], 200)
+            self.assertGreaterEqual(j['directions'][0]['stop_list']['count'], 45)
+            self.assertRegexpMatches(s,"MAX Blue")
+            self.assertRegexpMatches(s,"Hatfield Government")
+
+        # both route directions
+        url = get_url('route_stops', 'route_id=100')
         j = call_url(url)
         s = json.dumps(j)
-        self.assertEqual(j['status_code'], 200)
-        self.assertGreaterEqual(j['stop_list']['count'], 45)
-        self.assertRegexpMatches(s,"MAX Blue")
-        self.assertRegexpMatches(s,"Hatfield Government")
+        asserts(j, s)
+        self.assertGreaterEqual(len(j['directions']), 2)
+
+        # single route direction
+        url = get_url('route_stops', 'route_id=100&direction_id=1')
+        j = call_url(url)
+        s = json.dumps(j)
+        asserts(j, s)
+        self.assertGreaterEqual(len(j['directions']), 1)
+
 
     def test_stop(self):
         url = get_url('stop', 'stop_id=2')
