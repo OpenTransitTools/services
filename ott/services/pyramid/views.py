@@ -231,6 +231,10 @@ def solr(request):
 
     return ret_val
 
+@view_config(route_name='adverts', renderer='json', http_cache=cache_short)
+def adverts(request):
+    ret_val = get_adverts().query_by_request(request)
+    return ret_val
 
 @view_config(route_name='stress', renderer='text/plain', http_cache=0)
 def stress(request):
@@ -313,5 +317,12 @@ def get_planner():
         TRIP_PLANNER = TripPlanner(otp_url=otp_url, advert_url=advert_url, solr_instance=get_solr())
     return TRIP_PLANNER
 
-
+ADVERTS = None
+def get_adverts():
+    global ADVERTS
+    if ADVERTS is None:
+        advert_url = CONFIG.get('advert_url')
+        from ott.data.content import Adverts
+        ADVERTS = Adverts(advert_url)
+    return ADVERTS
 

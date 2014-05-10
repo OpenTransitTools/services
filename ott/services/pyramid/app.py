@@ -30,7 +30,7 @@ def do_view_config(cfg):
     #cfg.add_route('index',         '/')
 
     cfg.add_route('plan_trip',     '/plan_trip')
-    #cfg.add_route('adverts',       '/adverts')
+    cfg.add_route('adverts',       '/adverts')
 
     cfg.add_route('geocode',       '/geocode')
     cfg.add_route('geostr',        '/geostr')
