@@ -1,4 +1,4 @@
-. ~/services/bin/db-common.sh
+. ~/services/scripts/db-common.sh
 
 cd $BASEDIR
 

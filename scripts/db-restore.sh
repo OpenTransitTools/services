@@ -22,9 +22,7 @@ then
   # test integrity of the dump file 
 
   # move the current ott schema
-  echo "drop schema ott"
-  psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "DROP  SCHEMA ${OTT_SCHEMA}_OLD cascade;"
-  psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "ALTER SCHEMA ${OTT_SCHEMA} RENAME TO ${OTT_SCHEMA}_OLD;"
+  drop_schema;
 
   # load ott schema db from tar
   echo "restore ott dump"

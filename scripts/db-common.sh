@@ -2,6 +2,7 @@ export BASEDIR=${HOME}/services
 export PYTHON=${BASEDIR}/bin/python
 export PATH="${PYTHON}:${BASEDIR}/py/bin/:~/install/jdk/bin:/home/geoserve/postgres/bin/:$PATH"
 export LD_LIBRARY_PATH="${BASEDIR}/bin:/home/geoserve/install/postgres/lib:/home/geoserve/install/gdal/lib:/home/geoserve/install/geos/lib"
+export GTFS_ZIP=http://developer6.trimet.org/schedule/gtfs.zip
 
 # environment with ott schema
 export MASTER=${MASTER:="geoserve"}
@@ -14,6 +15,20 @@ export OTT_SCHEMA=${OTT_SCHEMA:="ott"}
 export OTT_DUMP=${OTT_SCHEMA}.tar
 export OTT_MIN_SIZE=10000000
 export OTT_DUMPER=$BASEDIR/bin/db-dump.sh
+
+
+function drop_schema()
+{
+  echo "create schema $OTT_SCHEMA"
+  psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "DROP  SCHEMA ${OTT_SCHEMA}_OLD cascade;"
+  psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "ALTER SCHEMA ${OTT_SCHEMA} RENAME TO ${OTT_SCHEMA}_OLD;"
+}
+
+function create_schema()
+{
+  echo "create schema $OTT_SCHEMA"
+  psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "CREATE SCHEMA ${OTT_SCHEMA};"
+}
 
 function grantor()
 {
@@ -45,6 +60,3 @@ function run_sql_file()
     echo "SET search_path TO $PGSCHEMA,public; \i $1;  | psql $PGDBNAME -U $PGUSER "
     echo "SET search_path TO $PGSCHEMA,public; \i $1;" | psql $PGDBNAME -U $PGUSER
 }
-
-
-

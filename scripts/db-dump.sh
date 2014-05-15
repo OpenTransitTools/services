@@ -17,7 +17,7 @@ then
   echo "gzip $OTT_DUMP"
   rm -f ${OTT_DUMP}.gz
   gzip $OTT_DUMP
-  ./bin/db-dump-scp.sh $*
+  ./scripts/db-dump-scp.sh $*
 else
   echo "ERROR: ${OTT_DUMP}.gz (from $OTT_SCHEMA schema) is not big enough at $size (less than $OTT_MIN_SIZE bytes)"
 fi
