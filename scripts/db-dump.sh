@@ -8,7 +8,7 @@ cd $BASEDIR
 
 # dump trimet postgres database to tar.gz, include only the following schemas;
 echo "pg_dump -n $OTT_SCHEMA $PGDBNAME -F t > $OTT_DUMP"
-#pg_dump -n $OTT_SCHEMA $PGDBNAME -F t > $OTT_DUMP
+pg_dump -n $OTT_SCHEMA $PGDBNAME -F t > $OTT_DUMP
 
 # check to see the size of the dump
 size=`ls -ltr $OTT_DUMP | awk -F" " '{ print $5 }'`
