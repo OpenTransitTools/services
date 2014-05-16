@@ -2,7 +2,6 @@ export BASEDIR=${HOME}/services
 export PYTHON=${BASEDIR}/bin/python
 export PATH="${PYTHON}:${BASEDIR}/py/bin/:~/install/jdk/bin:/home/geoserve/postgres/bin/:$PATH"
 export LD_LIBRARY_PATH="${BASEDIR}/bin:/home/geoserve/install/postgres/lib:/home/geoserve/install/gdal/lib:/home/geoserve/install/geos/lib"
-export GTFS_ZIP=http://developer6.trimet.org/schedule/gtfs.zip
 
 # environment with ott schema
 export MASTER=${MASTER:="geoserve"}
@@ -15,6 +14,8 @@ export OTT_SCHEMA=${OTT_SCHEMA:="ott"}
 export OTT_DUMP=${OTT_SCHEMA}.tar
 export OTT_MIN_SIZE=10000000
 export OTT_DUMPER=$BASEDIR/bin/db-dump.sh
+export GTFS_DOMAIN=${GTFS_DOMAIN:="localhost/trimet.org"}
+export GTFS_ZIP=http://${GTFS_DOMAIN}/schedule/gtfs.zip
 
 
 function drop_schema()
