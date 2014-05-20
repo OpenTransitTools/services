@@ -25,7 +25,9 @@ requires = [
 ]
 
 extras_require = dict(
-    dev=[],
+    dev=[
+      'linesman'
+    ],
 )
 
 #
