@@ -17,7 +17,7 @@ requires = [
     'gtfsdb',
     'psycopg2',
 
-    #'CherryPy',
+    'CherryPy',
     'pyramid',
     'waitress',
     'pyramid_tm',
