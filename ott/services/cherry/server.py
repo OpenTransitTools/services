@@ -49,5 +49,5 @@ def get_planner():
         TRIP_PLANNER = TripPlanner(otp_url=otp_url, advert_url=advert_url, solr_instance=get_solr())
     return TRIP_PLANNER
 
-cherrypy.config.update('config/production.ini')
+cherrypy.config.update('config/cherrypy.ini')
 cherrypy.quickstart(OttServer())
