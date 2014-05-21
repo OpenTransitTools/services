@@ -45,6 +45,8 @@ def do_view_config(cfg):
     cfg.add_route('route_stops',   '/route_stops')
 
     cfg.add_route('stress',        '/stress')
+    cfg.add_route('stress1',       '/stress1')
+    cfg.add_route('stress2',       '/stress2')
 
 
 def olconnect(settings):

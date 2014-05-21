@@ -1,6 +1,8 @@
 import logging
 log = logging.getLogger(__file__)
 
+from .stress import *
+
 from pyramid.response import Response
 from pyramid.view     import view_config
 from sqlalchemy.orm.exc import NoResultFound
@@ -32,7 +34,6 @@ cache_short=600   # 10 minutes
 
 system_err_msg = ServerError()
 data_not_found = DatabaseNotFound()
-
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):
@@ -235,27 +236,6 @@ def solr(request):
 def adverts(request):
     ret_val = get_adverts().query_by_request(request)
     return ret_val
-
-@view_config(route_name='stress', renderer='text/plain', http_cache=0)
-def stress(request):
-    out = None
-    session = None
-    try:
-        from ott.data.tests import load_routines
-        session = DB.session()
-        num = html_utils.get_first_param_as_int(request, 'num', 300)
-        out = load_routines.stops(num, session)
-    except NoResultFound, e:
-        log.warn(e)
-        out = "Nothing found..."
-    except Exception, e:
-        log.warn(e)
-        rollback_session(session)
-        out = "Crazy exception {0}".format(e)
-    finally:
-        close_session(session)
-
-    return Response(out, content_type='text/plain')
 
 
 def dao_response(dao):
