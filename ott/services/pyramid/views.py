@@ -290,11 +290,12 @@ def get_solr():
 
 TRIP_PLANNER = None
 def get_planner():
-    global TRIP_PLANNER 
+    global TRIP_PLANNER
     if TRIP_PLANNER is None:
         otp_url = CONFIG.get('otp_url')
-        advert_url = CONFIG.get('advert_url')
-        TRIP_PLANNER = TripPlanner(otp_url=otp_url, advert_url=advert_url, solr_instance=get_solr())
+        adverts = get_adverts()
+        fares = get_fares()
+        TRIP_PLANNER = TripPlanner(otp_url=otp_url, adverts=adverts, fares=fares, solr=get_solr())
     return TRIP_PLANNER
 
 ADVERTS = None
@@ -302,7 +303,17 @@ def get_adverts():
     global ADVERTS
     if ADVERTS is None:
         advert_url = CONFIG.get('advert_url')
-        from ott.data.content import Adverts
-        ADVERTS = Adverts(advert_url)
+        if advert_url:
+            from ott.data.content import Adverts
+            ADVERTS = Adverts(advert_url)
     return ADVERTS
+
+FARES = None
+def get_fares():
+    global FARES
+    if FARES is None:
+        fare_url = CONFIG.get('fare_url')
+        from ott.data.content import Fares
+        FARES = Fares(fare_url)
+    return FARES
 
