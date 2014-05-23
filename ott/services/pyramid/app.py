@@ -28,9 +28,9 @@ def do_view_config(cfg):
     '''
 
     # for testing...
-    import stress
-    stress.do_view_config(cfg)
-    cfg.scan(package=stress)
+    #import stress
+    #stress.do_view_config(cfg)
+    #cfg.scan(package=stress)
 
     import views
     views.do_view_config(cfg)
