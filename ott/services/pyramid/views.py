@@ -1,8 +1,6 @@
 import logging
 log = logging.getLogger(__file__)
 
-from .stress import *
-
 from pyramid.response import Response
 from pyramid.view     import view_config
 from sqlalchemy.orm.exc import NoResultFound
@@ -34,6 +32,24 @@ cache_short=600   # 10 minutes
 
 system_err_msg = ServerError()
 data_not_found = DatabaseNotFound()
+
+
+def do_view_config(cfg):
+    cfg.add_route('plan_trip',     '/plan_trip')
+    cfg.add_route('adverts',       '/adverts')
+
+    cfg.add_route('geocode',       '/geocode')
+    cfg.add_route('geostr',        '/geostr')
+    cfg.add_route('solr',          '/solr')
+
+    cfg.add_route('stop',          '/stop')
+    cfg.add_route('stops_near',    '/stops_near')
+    cfg.add_route('stop_schedule', '/stop_schedule')
+
+    cfg.add_route('route',         '/route')
+    cfg.add_route('routes',        '/routes')
+    cfg.add_route('route_stops',   '/route_stops')
+
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):

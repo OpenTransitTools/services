@@ -19,7 +19,6 @@ def main(global_config, **settings):
 
     cfg = Configurator(settings=settings)
     do_view_config(cfg)
-    cfg.scan()
     return cfg.make_wsgi_app()
 
 
@@ -27,26 +26,15 @@ def do_view_config(cfg):
     ''' adds the views (see below) and static directories to pyramid's config
         TODO: is there a better way to dot this (maybe via an .ini file)
     '''
-    #cfg.add_route('index',         '/')
 
-    cfg.add_route('plan_trip',     '/plan_trip')
-    cfg.add_route('adverts',       '/adverts')
+    # for testing...
+    import stress
+    stress.do_view_config(cfg)
+    cfg.scan(package=stress)
 
-    cfg.add_route('geocode',       '/geocode')
-    cfg.add_route('geostr',        '/geostr')
-    cfg.add_route('solr',          '/solr')
-
-    cfg.add_route('stop',          '/stop')
-    cfg.add_route('stops_near',    '/stops_near')
-    cfg.add_route('stop_schedule', '/stop_schedule')
-
-    cfg.add_route('route',         '/route')
-    cfg.add_route('routes',        '/routes')
-    cfg.add_route('route_stops',   '/route_stops')
-
-    cfg.add_route('stress',        '/stress')
-    cfg.add_route('stress1',       '/stress1')
-    cfg.add_route('stress2',       '/stress2')
+    import views
+    views.do_view_config(cfg)
+    cfg.scan(package=views)
 
 
 def olconnect(settings):
