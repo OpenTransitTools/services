@@ -1,7 +1,7 @@
 ''' NOTE: this package is used to run server load tests against Pyramid
     Not to be run in production (so remove from views.py when not in use) 
 '''
-
+import json
 import datetime
 import time
 import logging
@@ -78,13 +78,12 @@ def stress_json(request):
     rid = html_utils.get_first_param(request, 'route_id', None)
     session = DB.session()
     stop_times = StopTime.get_departure_schedule(session=session, stop_id=sid, route_id=rid)
-    out = ""
-    json = []
+    j = []
     for i, st in enumerate(stop_times):
-        out = out + st.departure_time + " "
         id = StopHeadsignDao.unique_id(st)
         now = datetime.datetime.now()
         time = StopScheduleDao.make_stop_time(st, id, now, i+1)
-        json.append(time)
-    return Response(json, content_type='text/plain')
+        j.append(time)
+    out =json.dumps(j)
+    return Response(out)
 
