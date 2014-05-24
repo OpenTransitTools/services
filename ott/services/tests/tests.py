@@ -91,7 +91,8 @@ class TestMyView(unittest.TestCase):
 
     def test_jsonspeedup(self):
         import simplejson
-        self.assertTrue(bool(getattr(simplejson, '_speedups', False))
+        self.assertTrue(bool(getattr(simplejson, '_speedups', False)))
+
 
 def get_url(svc_name, params=None):
     ret_val = "http://localhost:{0}/{1}".format(PORT, svc_name)
