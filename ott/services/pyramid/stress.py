@@ -13,6 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ott.otp_client.trip_planner import TripPlanner
 from ott.utils import html_utils
+from ott.utils import object_utils
 
 from ott.data.dao.headsign_dao import StopHeadsignDao
 from ott.data.dao.stop_schedule_dao import StopScheduleDao
@@ -81,9 +82,14 @@ def stress_json(request):
     j = []
     for i, st in enumerate(stop_times):
         id = StopHeadsignDao.unique_id(st)
+
+        id = st.get_headsign()
+        rid = st.trip.route_id
+        hs = "{0}-{1}-{2}".format(rid, st.stop_id, id)
+        id = object_utils.to_hash(hs)
         now = datetime.datetime.now()
+
         time = StopScheduleDao.make_stop_time(st, id, now, i+1)
         j.append(time)
     out =json.dumps(j)
     return Response(out)
-
