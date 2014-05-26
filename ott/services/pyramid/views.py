@@ -120,8 +120,8 @@ def stop(request):
     session = None
     try:
         session = DB.session()
-        sp = StopParamParser(request)
-        ret_val = StopDao.from_stop_id(session, stop_id=sp.stop_id, agency=sp.agency, detailed=sp.detailed, show_alerts=sp.alerts)
+        params = StopParamParser(request)
+        ret_val = StopDao.from_stop_params(session, params)
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
