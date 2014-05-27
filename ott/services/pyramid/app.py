@@ -28,10 +28,16 @@ def do_view_config(cfg):
     '''
 
     # for testing...
-    #import stress
-    #stress.do_view_config(cfg)
-    #cfg.scan(package=stress)
+    import stress
+    stress.do_view_config(cfg)
+    cfg.scan(package=stress)
 
+    # for generating stress test urls to the services (amoungst other uses)
+    import urls
+    urls.do_view_config(cfg)
+    cfg.scan(package=urls)
+
+    # web service endpoints 
     import views
     views.do_view_config(cfg)
     cfg.scan(package=views)
