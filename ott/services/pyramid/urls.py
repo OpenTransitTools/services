@@ -1,6 +1,8 @@
 import logging
 log = logging.getLogger(__file__)
 
+from pyramid.view     import view_config
+
 from ott.utils import html_utils
  
 from app import DB
@@ -9,10 +11,11 @@ from app import CONFIG
 def do_view_config(cfg):
     cfg.add_route('urls', '/urls')
 
+
 @view_config(route_name='urls', renderer='text', http_cache=0)
 def urls(request):
     ret_val = None
-    v = html_utils.RouteParamParser(request)
+    #v = html_utils.RouteParamParser(request)
     return ret_val
 
 
