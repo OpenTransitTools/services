@@ -37,7 +37,7 @@ def do_view_config(cfg):
     urls.do_view_config(cfg)
     cfg.scan(package=urls)
 
-    # web service endpoints 
+    # web service end-points 
     import views
     views.do_view_config(cfg)
     cfg.scan(package=views)
