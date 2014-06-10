@@ -74,7 +74,7 @@ class TestMyView(unittest.TestCase):
         self.assertRegexpMatches(s,"Lake Oswego")
 
     def test_plan_trip(self):
-        url = get_url('plan_trip', 'from=pdx&to=zoo')
+        url = get_url('plan_trip', 'from=pdx::45.587546,-122.592925&to=zoo')
         j = call_url(url)
         s = json.dumps(j)
         #self.assertEqual(j['status_code'], 200)
