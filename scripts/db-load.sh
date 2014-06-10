@@ -9,6 +9,7 @@ date
 drop_schema;
 create_schema;
 
+pkill -9 bin/gtfsdb-load
 bin/gtfsdb-load --database_url postgresql://$PGUSER@localhost:$PGPORT/$PGDBNAME -s $OTT_SCHEMA --is_geospatial $GTFS_ZIP
 
 date

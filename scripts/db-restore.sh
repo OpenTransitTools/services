@@ -26,11 +26,15 @@ then
 
   # load ott schema db from tar
   echo "restore ott dump"
+  pkill -9 pg_restore
   pg_restore -d $PGDBNAME ${OTT_DUMP}
   grantor "$OTT_SCHEMA";
 
+  sleep 5
+
   # vacuum analyze db
   echo "vacuum analyze"
+  pkill -9 psql
   psql -p $PGPORT -d $PGDBNAME -U $PGUSER -c "vacuum analyze;"
 
   rm -f ${OTT_DUMP}.old
