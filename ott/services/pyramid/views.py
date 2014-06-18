@@ -56,7 +56,6 @@ def route(request):
     ret_val = None
     session = None
     try:
-        #import pdb; pdb.set_trace()
         session = DB.session()
         rp = RouteParamParser(request)
         ret_val = RouteDao.from_route_id(session, rp.route_id)
@@ -140,6 +139,7 @@ def stops_near(request):
     ret_val = None
     session = None
     try:
+        #import pdb; pdb.set_trace()
         session = DB.session()
         gp = GeoParamParser(request)
         ret_val = StopListDao.nearest_stops(session, geo_params=gp)
