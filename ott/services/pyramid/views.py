@@ -22,7 +22,7 @@ from ott.geocoder.geosolr import GeoSolr
 from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import html_utils
- 
+
 from app import DB
 from app import CONFIG
 
