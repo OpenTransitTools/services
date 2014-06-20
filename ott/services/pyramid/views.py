@@ -161,6 +161,7 @@ def stop_schedule(request):
     ret_val = None
     session = None
     try:
+        #import pdb; pdb.set_trace()
         session = DB.session()
         sp = StopParamParser(request)
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
