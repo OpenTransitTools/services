@@ -26,7 +26,7 @@ requires = [
 
 extras_require = dict(
     dev=[
-      'linesman' if os.name != 'nt' else ''
+      '' if os.name == 'nt' or os.name == 'posix' else 'linesman'
     ],
 )
 
