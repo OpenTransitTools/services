@@ -319,10 +319,11 @@ ADVERTS = None
 def get_adverts():
     global ADVERTS
     if ADVERTS is None:
-        advert_url = CONFIG.get('advert_url')
+        url = CONFIG.get('advert_url')
+        timeout = CONFIG.get('avert_timeout_mins')
         if advert_url:
             from ott.data.content import Adverts
-            ADVERTS = Adverts(advert_url)
+            ADVERTS = Adverts(url, timeout)
     return ADVERTS
 
 FARES = None
