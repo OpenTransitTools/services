@@ -22,6 +22,7 @@ from ott.geocoder.geosolr import GeoSolr
 from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import html_utils
+from ott.utils import object_utils
 
 from app import DB
 from app import CONFIG
@@ -320,8 +321,8 @@ def get_adverts():
     global ADVERTS
     if ADVERTS is None:
         url = CONFIG.get('advert_url')
-        timeout = CONFIG.get('avert_timeout_mins')
-        if advert_url:
+        timeout = object_utils.safe_int(CONFIG.get('avert_timeout_mins'))
+        if url:
             from ott.data.content import Adverts
             ADVERTS = Adverts(url, timeout)
     return ADVERTS
