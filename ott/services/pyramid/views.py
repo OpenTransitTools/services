@@ -22,6 +22,7 @@ from ott.geocoder.geosolr import GeoSolr
 from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import html_utils
+from ott.utils import json_utils
 from ott.utils import object_utils
 
 from app import DB
@@ -42,6 +43,7 @@ def do_view_config(cfg):
     cfg.add_route('geocode',       '/geocode')
     cfg.add_route('geostr',        '/geostr')
     cfg.add_route('solr',          '/solr')
+    cfg.add_route('atis_geocode',  '/atis_geocode')
 
     cfg.add_route('stop',          '/stop')
     cfg.add_route('stops_near',    '/stops_near')
@@ -216,6 +218,11 @@ def geocode(request):
     return dao_response(ret_val)
 
 
+@view_config(route_name='atis_geocode', renderer='json', http_cache=cache_long)
+def atis_geocode(request):
+    url = CONFIG.get('atis_url')
+    return proxy_json(request, url)
+
 @view_config(route_name='geostr', renderer='string', http_cache=cache_long)
 def geostr(request):
     ret_val = None
@@ -249,6 +256,7 @@ def solr(request):
         pass
 
     return ret_val
+
 
 @view_config(route_name='adverts', renderer='json', http_cache=cache_short)
 def adverts(request):
@@ -298,6 +306,21 @@ def close_session(session):
             log.info('CLOSE SESSION {0}'.format(e))
             pass
 
+def proxy_json(request, url):
+    ''' will call a json url and send back response / error string...
+    '''
+    ret_val = None
+    try:
+        #import pdb; pdb.set_trace()
+        ret_val = json_utils.stream_json(url, request.query_string)
+    except Exception, e:
+        log.warn(e)
+        ret_val = system_err_msg.status_message
+    finally:
+        pass
+
+    return ret_val
+
 
 SOLR = None
 def get_solr():
@@ -305,6 +328,7 @@ def get_solr():
     if SOLR is None:
         SOLR = GeoSolr(CONFIG.get('solr_url'))
     return SOLR
+
 
 TRIP_PLANNER = None
 def get_planner():
