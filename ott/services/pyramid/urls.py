@@ -16,6 +16,10 @@ def do_view_config(cfg):
 
 @view_config(route_name='urls', renderer='string', http_cache=0)
 def urls(request):
+    ''' This module is used to generate human readable list of URLs to the various services in this project.
+        Basically, used for manual testing of the services.
+    '''
+
     ret_val = ""
 
     verbose = html_utils.get_first_param_as_boolean(request, 'verbose', True)

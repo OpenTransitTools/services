@@ -19,6 +19,7 @@ from ott.utils.parse import GeoParamParser
 from ott.utils.parse import RouteParamParser
 
 from ott.geocoder.geosolr import GeoSolr
+from ott.geocoder.geo_dao import GeoListDao
 from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import html_utils
@@ -214,14 +215,27 @@ def geocode(request):
         ret_val = system_err_msg
     finally:
         pass
-
     return dao_response(ret_val)
 
 
 @view_config(route_name='atis_geocode', renderer='json', http_cache=cache_long)
 def atis_geocode(request):
-    url = CONFIG.get('atis_url')
-    return proxy_json(request, url)
+    ret_val = None
+    try:
+        url = CONFIG.get('atis_url')
+        qs  = request.query_string
+        doc = json_utils.stream_json(url, qs)
+        ret_val = GeoListDao.make_geo_list_dao(doc)
+    except IndexError, e:
+        log.warn(e)
+        ret_val = data_not_found
+    except Exception, e:
+        log.warn(e)
+        ret_val = system_err_msg
+    finally:
+        pass
+    return dao_response(ret_val)
+
 
 @view_config(route_name='geostr', renderer='string', http_cache=cache_long)
 def geostr(request):
@@ -285,6 +299,22 @@ def json_response_list(lst, mime='application/json', status=200):
             json_data.append(jd)
     return json_response(json_data, mime, status)
 
+def proxy_json(url, query_string):
+    ''' will call a json url and send back response / error string...
+    '''
+    ret_val = None
+    try:
+        #import pdb; pdb.set_trace()
+        ret_val = json_utils.stream_json(url, query_string)
+    except Exception, e:
+        log.warn(e)
+        ret_val = system_err_msg.status_message
+    finally:
+        pass
+
+    return ret_val
+
+
 def rollback_session(session):
     ''' rollback session '''
     if session:
@@ -305,21 +335,6 @@ def close_session(session):
         except Exception, e:
             log.info('CLOSE SESSION {0}'.format(e))
             pass
-
-def proxy_json(request, url):
-    ''' will call a json url and send back response / error string...
-    '''
-    ret_val = None
-    try:
-        #import pdb; pdb.set_trace()
-        ret_val = json_utils.stream_json(url, request.query_string)
-    except Exception, e:
-        log.warn(e)
-        ret_val = system_err_msg.status_message
-    finally:
-        pass
-
-    return ret_val
 
 
 SOLR = None
