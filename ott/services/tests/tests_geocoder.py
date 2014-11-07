@@ -26,7 +26,7 @@ class TestGeoCoder(unittest.TestCase):
     def test_geocode_csv_data(self):
         for d in self.test_data:
             u = "http://dev.trimet.org/ride_ws/geostr?place={0}".format(d['name'])
-            s = urllib.urlopen(u) 
+            s = urllib.urlopen(u).read()
             print d, u, s
             self.assertRegexpMatches(s,d['lat'])
             self.assertRegexpMatches(s,d['lon'])
