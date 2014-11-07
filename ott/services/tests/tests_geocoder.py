@@ -1,15 +1,15 @@
 import unittest
-from pyramid import testing
-
-import urllib
-import contextlib
 import json
 
+from ott.utils.parse import csv_reader
 from .tests import call_url, get_url
 
 class TestGeoCoder(unittest.TestCase):
     def setUp(self):
-        pass
+        here = csv_reader.Csv.get_dirname(__file__)
+        c = csv_reader.Csv('geocodes.csv', here)
+        self.test_data = c.open()
+        c.close()
 
     def tearDown(self):
         pass
