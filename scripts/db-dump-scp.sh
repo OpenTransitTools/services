@@ -2,12 +2,12 @@
 
 cd $BASEDIR
 
-# what servers to scp the db dump? (default is maps8 & 9)
+# what servers to scp the db dump? (default is maps7-10)
 svrs=$*
-svrs=${svrs:="maps8 maps9"}
+svrs=${svrs:="maps7 maps8 maps9 maps10"}
 
 
-if [[ $HOSTNAME == maps10* ]]
+if [[ $HOSTNAME == maps6* ]]
 then
     for svr in $svrs
     do 
