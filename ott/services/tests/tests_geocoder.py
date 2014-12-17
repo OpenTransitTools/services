@@ -26,5 +26,5 @@ class TestGeoCoder(unittest.TestCase):
         for d in self.test_data:
             u = get_url('geostr', 'place=' + d['name'])
             s = call_url_text(u)
-            self.assertRegexpMatches(s,d['lat'])
-            self.assertRegexpMatches(s,d['lon'])
+            self.assertRegexpMatches(s,d['lat'].strip())
+            self.assertRegexpMatches(s,d['lon'].strip())
