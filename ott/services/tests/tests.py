@@ -77,7 +77,6 @@ class TestMyView(unittest.TestCase):
         url = get_url('plan_trip', 'from=pdx::45.587546,-122.592925&to=zoo')
         j = call_url(url)
         s = json.dumps(j)
-        #self.assertEqual(j['status_code'], 200)
         self.assertRegexpMatches(s,"Zoo")
         self.assertRegexpMatches(s,"itineraries")
 
@@ -106,4 +105,5 @@ def call_url(url):
     return ret_json
 
 def call_url_text(url):
+    print url
     return urllib.urlopen(url).read()
