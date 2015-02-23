@@ -55,7 +55,7 @@ nosetests.xml
 .project
 .pydevproject
 .idea
-view.iml
+*.iml
 
 *.db
 *.sqlite
