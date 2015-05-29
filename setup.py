@@ -12,8 +12,8 @@ requires = [
     'ott.geocoder',
     'ott.otp_client',
 
-    'sqlalchemy == 0.8.6',
-    'geoalchemy>=0.6',
+    'sqlalchemy',
+    'geoalchemy2',
     'gtfsdb',
     'psycopg2',
 
