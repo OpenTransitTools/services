@@ -49,6 +49,7 @@ def do_view_config(cfg):
     cfg.add_route('stop',          '/stop')
     cfg.add_route('stops_near',    '/stops_near')
     cfg.add_route('stop_schedule', '/stop_schedule')
+    cfg.add_route('trip_schedule', '/trip_schedule')
 
     cfg.add_route('route',         '/route')
     cfg.add_route('routes',        '/routes')
@@ -169,6 +170,38 @@ def stop_schedule(request):
         session = DB.session()
         sp = StopParamParser(request)
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = data_not_found
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = system_err_msg
+    finally:
+        close_session(session)
+
+    return dao_response(ret_val)
+
+
+@view_config(route_name='trip_schedule', renderer='json', http_cache=cache_short)
+def trip_schedule(request):
+    """
+        Trip Schedule:
+        http://transitfeeds.com/p/trimet/43/latest/trip/5682380
+
+        List of Trips for Route / Date:
+        http://transitfeeds.com/p/trimet/43/latest/route/70/20151202
+
+        http://transitfeeds.com/p/ride-connection/477/latest/route/1998
+        http://transitfeeds.com/p/swan-island-evening-shuttle/484/latest/trip/32180A614B2437
+    """
+    ret_val = None
+    session = None
+    try:
+        #import pdb; pdb.set_trace()
+        session = DB.session()
+        sp = StopParamParser(request)
+        ret_val = TripScheduleDao.get_trip_schedule_from_params(session, sp)
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
