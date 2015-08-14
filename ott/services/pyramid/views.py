@@ -170,6 +170,8 @@ def stop_schedule(request):
         session = DB.session()
         sp = StopParamParser(request)
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
+        if ret_val.stop is None:
+            ret_val.has_errors = True
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
