@@ -14,7 +14,8 @@ export OTT_SCHEMA=${OTT_SCHEMA:="ott"}
 export OTT_DUMP=${OTT_SCHEMA}.tar
 export OTT_MIN_SIZE=10000000
 export OTT_DUMPER=$BASEDIR/bin/db-dump.sh
-export GTFS_ZIP=http://localhost/tmws/schedule/gtfs.zip
+#export GTFS_ZIP=/home/otp/OtpDeployer/otp/cache/gtfs/gtfs.zip
+export GTFS_ZIP=${GTFS_ZIP:="http://localhost/tmws/schedule/gtfs.zip"}
 export GTFS_DOMAIN=${GTFS_DOMAIN:="localhost/trimet.org"}
 
 function drop_schema()
