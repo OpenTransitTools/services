@@ -12,7 +12,7 @@ build:
   4. git update-index --assume-unchanged .pydevproject
 
 run:
-  1. rm nohup.out; nohup bin/pserve config/pc.ini --reload SERVICES=1 &
+  1. rm nohup.out; nohup bin/pserve config/development.ini --reload SERVICES=1 &
   2. http://localhost:44444/stop?stop_id=2&full
 
 test:
@@ -30,5 +30,3 @@ load gtfs
   5. SQL LITE: bin/gtfsdb-load --database_url sqlite://gtfs.db http://developer.trimet.org/schedule/gtfs.zip
      - or -
      PostGIS: bin/gtfsdb-load --database_url postgresql://postgres@127.0.0.1:5432/postgres --is_geospatial --schema ott http://developer.trimet.org/schedule/gtfs.zip
-
-
