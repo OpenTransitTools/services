@@ -102,9 +102,10 @@ def route_stops(request):
     ret_val = None
     session = None
     try:
+        #import pdb; pdb.set_trace()
         session = DB.session()
-        sp = StopParamParser(request)
-        ret_val = RouteStopListDao.from_route(session, sp.route_id, sp.direction_id)
+        params = StopParamParser(request)
+        ret_val = RouteStopListDao.from_params(session, params)
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
