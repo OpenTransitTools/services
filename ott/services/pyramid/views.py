@@ -295,6 +295,15 @@ def adverts(request):
 
 @view_config(route_name='route_urls', renderer='string', http_cache=cache_short)
 def route_urls(request):
+    """ return a list of urls based on route ids in the database
+        params are 'host' and 'service' ... see how they're used below
+
+        service urls:
+          http://localhost:44444/route_urls
+          http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride_ws/route_stops
+        html pages:
+          http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride/stop_select_list.html
+    """
     ret_val = ""
     session = None
     try:
@@ -316,16 +325,28 @@ def route_urls(request):
 
 @view_config(route_name='stop_urls', renderer='string', http_cache=cache_short)
 def stop_urls(request):
+    """ return a list of urls based on stop ids in the database
+        params are 'host' and 'service' ... see how they're used below
+
+        service urls:
+          http://localhost:44444/stop_urls
+          http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop
+          http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop_schedule
+        html pages:
+          http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop.html
+          http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop_schedule.html
+    """
     ret_val = ""
     session = None
     try:
-        from gtfsdb import Route
-        session = DB.session()
-        routes = Route.active_route_ids(session)
+        from gtfsdb import Stop
+        limit = request.params.get('limit')
         host = request.params.get('host', request.host)
         service = request.params.get('service', 'route')
-        for r in routes:
-            url = "http://{}/{}?route_id={}&agency_id={}&detailed".format(host, service, r['route_id'], r['agency_id'])
+        session = DB.session()
+        stops = Stop.active_stop_ids(session, limit)
+        for r in stops:
+            url = "http://{}/{}?stop_id={}&detailed".format(host, service, r['stop_id'])
             ret_val = ret_val + url + "\n"
     except Exception, e:
         log.warn(e)
