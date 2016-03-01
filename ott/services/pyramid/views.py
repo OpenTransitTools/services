@@ -75,9 +75,7 @@ def route(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
 def routes(request):
@@ -95,9 +93,7 @@ def routes(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='route_stops', renderer='json', http_cache=cache_long)
 def route_stops(request):
@@ -117,9 +113,7 @@ def route_stops(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='stop', renderer='json', http_cache=cache_long)
 def stop(request):
@@ -138,9 +132,7 @@ def stop(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='stops_near', renderer='json', http_cache=cache_long)
 def stops_near(request):
@@ -160,9 +152,7 @@ def stops_near(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='stop_schedule', renderer='json', http_cache=cache_short)
 def stop_schedule(request):
@@ -184,9 +174,7 @@ def stop_schedule(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
-
 
 @view_config(route_name='trip_schedule', renderer='json', http_cache=cache_short)
 def trip_schedule(request):
@@ -216,7 +204,6 @@ def trip_schedule(request):
         ret_val = system_err_msg
     finally:
         close_session(session)
-
     return dao_response(ret_val)
 
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
@@ -234,7 +221,6 @@ def plan_trip(request):
         ret_val = dao_response(system_err_msg)
     finally:
         pass
-
     return ret_val
 
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
@@ -384,7 +370,6 @@ def proxy_json(url, query_string):
         pass
 
     return ret_val
-
 
 def rollback_session(session):
     ''' rollback session '''
