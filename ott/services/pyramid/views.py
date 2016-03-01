@@ -55,6 +55,8 @@ def do_view_config(cfg):
     cfg.add_route('routes',        '/routes')
     cfg.add_route('route_stops',   '/route_stops')
 
+    cfg.add_route('route_urls',    '/route_urls')
+    cfg.add_route('stop_urls',     '/stop_urls')
 
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):
@@ -217,7 +219,6 @@ def trip_schedule(request):
 
     return dao_response(ret_val)
 
-
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
 def plan_trip(request):
     ret_val = None
@@ -236,7 +237,6 @@ def plan_trip(request):
 
     return ret_val
 
-
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
 def geocode(request):
     ret_val = None
@@ -252,7 +252,6 @@ def geocode(request):
     finally:
         pass
     return dao_response(ret_val)
-
 
 @view_config(route_name='atis_geocode', renderer='json', http_cache=cache_long)
 def atis_geocode(request):
@@ -272,7 +271,6 @@ def atis_geocode(request):
         pass
     return dao_response(ret_val)
 
-
 @view_config(route_name='geostr', renderer='string', http_cache=cache_long)
 def geostr(request):
     ret_val = None
@@ -284,9 +282,7 @@ def geostr(request):
         ret_val = system_err_msg.status_message
     finally:
         pass
-
     return ret_val
-
 
 @view_config(route_name='solr', renderer='json', http_cache=cache_long)
 def solr(request):
@@ -304,15 +300,54 @@ def solr(request):
         ret_val = dao_response(system_err_msg)
     finally:
         pass
-
     return ret_val
-
 
 @view_config(route_name='adverts', renderer='json', http_cache=cache_short)
 def adverts(request):
     ret_val = get_adverts().query_by_request(request)
     return ret_val
 
+@view_config(route_name='route_urls', renderer='string', http_cache=cache_short)
+def route_urls(request):
+    ret_val = ""
+    session = None
+    try:
+        from gtfsdb import Route
+        session = DB.session()
+        routes = Route.active_route_ids(session)
+        host = request.params.get('host', request.host)
+        service = request.params.get('service', 'route')
+        for r in routes:
+            url = "http://{}/{}?route_id={}&agency_id={}&detailed".format(host, service, r['route_id'], r['agency_id'])
+            ret_val = ret_val + url + "\n"
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = system_err_msg.status_message
+    finally:
+        close_session(session)
+    return ret_val
+
+@view_config(route_name='stop_urls', renderer='string', http_cache=cache_short)
+def stop_urls(request):
+    ret_val = ""
+    session = None
+    try:
+        from gtfsdb import Route
+        session = DB.session()
+        routes = Route.active_route_ids(session)
+        host = request.params.get('host', request.host)
+        service = request.params.get('service', 'route')
+        for r in routes:
+            url = "http://{}/{}?route_id={}&agency_id={}&detailed".format(host, service, r['route_id'], r['agency_id'])
+            ret_val = ret_val + url + "\n"
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = system_err_msg.status_message
+    finally:
+        close_session(session)
+    return ret_val
 
 def dao_response(dao):
     ''' using a BaseDao object, send the data to a pyramid Reponse '''
