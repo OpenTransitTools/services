@@ -58,24 +58,6 @@ def do_view_config(cfg):
     cfg.add_route('route_urls',    '/route_urls')
     cfg.add_route('stop_urls',     '/stop_urls')
 
-@view_config(route_name='route', renderer='json', http_cache=cache_long)
-def route(request):
-    ret_val = None
-    session = None
-    try:
-        session = DB.session()
-        rp = RouteParamParser(request)
-        ret_val = RouteDao.from_route_id(session, rp.route_id)
-    except NoResultFound, e:
-        log.warn(e)
-        ret_val = data_not_found
-    except Exception, e:
-        log.warn(e)
-        rollback_session(session)
-        ret_val = system_err_msg
-    finally:
-        close_session(session)
-    return dao_response(ret_val)
 
 @view_config(route_name='routes', renderer='json', http_cache=cache_long)
 def routes(request):
@@ -95,6 +77,25 @@ def routes(request):
         close_session(session)
     return dao_response(ret_val)
 
+@view_config(route_name='route', renderer='json', http_cache=cache_long)
+def route(request):
+    ret_val = None
+    session = None
+    try:
+        session = DB.session()
+        rp = RouteParamParser(request)
+        ret_val = RouteDao.from_route_id(session, rp.route_id)
+    except NoResultFound, e:
+        log.warn(e)
+        ret_val = data_not_found
+    except Exception, e:
+        log.warn(e)
+        rollback_session(session)
+        ret_val = system_err_msg
+    finally:
+        close_session(session)
+    return dao_response(ret_val)
+
 @view_config(route_name='route_stops', renderer='json', http_cache=cache_long)
 def route_stops(request):
     ret_val = None
@@ -102,7 +103,7 @@ def route_stops(request):
     try:
         #import pdb; pdb.set_trace()
         session = DB.session()
-        params = StopParamParser(request)
+        params = RouteParamParser(request)
         ret_val = RouteStopListDao.from_params(session, params)
     except NoResultFound, e:
         log.warn(e)
@@ -354,6 +355,17 @@ def stop_urls(request):
         ret_val = system_err_msg.status_message
     finally:
         close_session(session)
+    return ret_val
+
+def url_response(host, service, id, agency_id=None, extra="&detailed"):
+    ''' return a url with id and other good stuff
+    '''
+    url = "http://{}/{}?id={}"
+    if agency_id:
+        url = url + "&agency_id={}".format(agency_id)
+    if extra:
+        url = url + extra
+    ret_val = url.format(host, service, id)
     return ret_val
 
 def dao_response(dao):
