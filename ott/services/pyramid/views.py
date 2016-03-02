@@ -101,7 +101,6 @@ def route_stops(request):
     ret_val = None
     session = None
     try:
-        #import pdb; pdb.set_trace()
         session = DB.session()
         params = RouteParamParser(request)
         ret_val = RouteStopListDao.from_params(session, params)
@@ -160,7 +159,6 @@ def stop_schedule(request):
     ret_val = None
     session = None
     try:
-        #import pdb; pdb.set_trace()
         session = DB.session()
         sp = StopParamParser(request)
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
@@ -192,7 +190,6 @@ def trip_schedule(request):
     ret_val = None
     session = None
     try:
-        #import pdb; pdb.set_trace()
         session = DB.session()
         sp = StopParamParser(request)
         ret_val = TripScheduleDao.get_trip_schedule_from_params(session, sp)
@@ -314,7 +311,7 @@ def route_urls(request):
         host = request.params.get('host', request.host)
         service = request.params.get('service', 'route')
         for r in routes:
-            url = "http://{}/{}?route_id={}&agency_id={}&detailed".format(host, service, r['route_id'], r['agency_id'])
+            url = url_response(host, service, r['route_id'], r['agency_id'])
             ret_val = ret_val + url + "\n"
     except Exception, e:
         log.warn(e)
@@ -340,14 +337,19 @@ def stop_urls(request):
     ret_val = ""
     session = None
     try:
-        from gtfsdb import Stop
+        #import pdb; pdb.set_trace()
+        from gtfsdb import Stop, Block
         limit = request.params.get('limit')
+        blocks = request.params.get('blocks')
         host = request.params.get('host', request.host)
         service = request.params.get('service', 'route')
         session = DB.session()
-        stops = Stop.active_stop_ids(session, limit)
+        if blocks:
+            stops = Block.active_stop_ids(session, limit)
+        else:
+            stops = Stop.active_stop_ids(session, limit)
         for r in stops:
-            url = "http://{}/{}?stop_id={}&detailed".format(host, service, r['stop_id'])
+            url = url_response(host, service, r['stop_id'])
             ret_val = ret_val + url + "\n"
     except Exception, e:
         log.warn(e)
@@ -394,7 +396,6 @@ def proxy_json(url, query_string):
     '''
     ret_val = None
     try:
-        #import pdb; pdb.set_trace()
         ret_val = json_utils.stream_json(url, query_string)
     except Exception, e:
         log.warn(e)
