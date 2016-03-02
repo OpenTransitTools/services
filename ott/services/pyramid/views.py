@@ -331,6 +331,7 @@ def stop_urls(request):
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop_schedule
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop_schedule&blocks=t
+
         html pages:
           http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop.html
           http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop_schedule.html
