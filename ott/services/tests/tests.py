@@ -100,6 +100,7 @@ def get_url(svc_name, params=None):
     return ret_val
 
 def call_url(url):
+    print url
     with contextlib.closing(urllib.urlopen(url)) as f:
         ret_json = json.load(f)
     return ret_json
