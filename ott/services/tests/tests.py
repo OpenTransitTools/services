@@ -7,6 +7,7 @@ import json
 
 PORT="44444"
 
+
 class TestMyView(unittest.TestCase):
     def setUp(self):
         pass
@@ -50,7 +51,6 @@ class TestMyView(unittest.TestCase):
         asserts(j, s)
         self.assertGreaterEqual(len(j['directions']), 1)
 
-
     def test_stop(self):
         url = get_url('stop', 'stop_id=2')
         j = call_url(url)
@@ -87,10 +87,6 @@ class TestMyView(unittest.TestCase):
         self.assertEqual(j['status_code'], 200)
         self.assertRegexpMatches(s,"-122.71")
         self.assertRegexpMatches(s,"45.51")
-
-    def test_jsonspeedup(self):
-        import simplejson
-        self.assertTrue(bool(getattr(simplejson, '_speedups', False)))
 
 
 def get_url(svc_name, params=None):
