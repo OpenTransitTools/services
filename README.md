@@ -30,3 +30,5 @@ load gtfs
   5. SQL LITE: bin/gtfsdb-load --database_url sqlite://gtfs.db http://developer.trimet.org/schedule/gtfs.zip
      - or -
      PostGIS: bin/gtfsdb-load --database_url postgresql://postgres@127.0.0.1:5432/postgres --is_geospatial --schema ott http://developer.trimet.org/schedule/gtfs.zip
+
+Nov 26, 2016
