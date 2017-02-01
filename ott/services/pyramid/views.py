@@ -1,8 +1,5 @@
-import logging
-log = logging.getLogger(__file__)
-
 from pyramid.response import Response
-from pyramid.view     import view_config
+from pyramid.view import view_config
 from sqlalchemy.orm.exc import NoResultFound
 
 from ott.data.dao import DatabaseNotFound
@@ -22,12 +19,15 @@ from ott.geocoder.geosolr import GeoSolr
 from ott.geocoder.geo_dao import GeoListDao
 from ott.otp_client.trip_planner import TripPlanner
 
-from ott.utils import html_utils
 from ott.utils import json_utils
 from ott.utils import object_utils
 
 from app import DB
 from app import CONFIG
+
+import logging
+log = logging.getLogger(__file__)
+
 
 ### cache time - affects how long varnish cache will hold a copy of the data
 cache_long=36000  # 10 hours
@@ -77,6 +77,7 @@ def routes(request):
         close_session(session)
     return dao_response(ret_val)
 
+
 @view_config(route_name='route', renderer='json', http_cache=cache_long)
 def route(request):
     ret_val = None
@@ -95,6 +96,7 @@ def route(request):
     finally:
         close_session(session)
     return dao_response(ret_val)
+
 
 @view_config(route_name='route_stops', renderer='json', http_cache=cache_long)
 def route_stops(request):
@@ -115,6 +117,7 @@ def route_stops(request):
         close_session(session)
     return dao_response(ret_val)
 
+
 @view_config(route_name='stop', renderer='json', http_cache=cache_long)
 def stop(request):
     ret_val = None
@@ -134,12 +137,12 @@ def stop(request):
         close_session(session)
     return dao_response(ret_val)
 
+
 @view_config(route_name='stops_near', renderer='json', http_cache=cache_long)
 def stops_near(request):
     ret_val = None
     session = None
     try:
-        #import pdb; pdb.set_trace()
         session = DB.session()
         gp = GeoParamParser(request)
         ret_val = StopListDao.nearest_stops(session, geo_params=gp)
@@ -153,6 +156,7 @@ def stops_near(request):
     finally:
         close_session(session)
     return dao_response(ret_val)
+
 
 @view_config(route_name='stop_schedule', renderer='json', http_cache=cache_short)
 def stop_schedule(request):
@@ -174,6 +178,7 @@ def stop_schedule(request):
     finally:
         close_session(session)
     return dao_response(ret_val)
+
 
 @view_config(route_name='trip_schedule', renderer='json', http_cache=cache_short)
 def trip_schedule(request):
@@ -204,11 +209,11 @@ def trip_schedule(request):
         close_session(session)
     return dao_response(ret_val)
 
+
 @view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
 def plan_trip(request):
     ret_val = None
     try:
-        #import pdb; pdb.set_trace()
         trip = get_planner().plan_trip(request)
         ret_val = json_response(trip)
     except NoResultFound, e:
@@ -220,6 +225,7 @@ def plan_trip(request):
     finally:
         pass
     return ret_val
+
 
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
 def geocode(request):
@@ -236,6 +242,7 @@ def geocode(request):
     finally:
         pass
     return dao_response(ret_val)
+
 
 @view_config(route_name='atis_geocode', renderer='json', http_cache=cache_long)
 def atis_geocode(request):
@@ -255,6 +262,7 @@ def atis_geocode(request):
         pass
     return dao_response(ret_val)
 
+
 @view_config(route_name='geostr', renderer='string', http_cache=cache_long)
 def geostr(request):
     ret_val = None
@@ -267,6 +275,7 @@ def geostr(request):
     finally:
         pass
     return ret_val
+
 
 @view_config(route_name='solr', renderer='json', http_cache=cache_long)
 def solr(request):
@@ -286,10 +295,12 @@ def solr(request):
         pass
     return ret_val
 
+
 @view_config(route_name='adverts', renderer='json', http_cache=cache_short)
 def adverts(request):
     ret_val = get_adverts().query_by_request(request)
     return ret_val
+
 
 @view_config(route_name='route_urls', renderer='string', http_cache=cache_short)
 def route_urls(request):
@@ -321,6 +332,7 @@ def route_urls(request):
         close_session(session)
     return ret_val
 
+
 @view_config(route_name='stop_urls', renderer='string', http_cache=cache_short)
 def stop_urls(request):
     """ return a list of urls based on stop ids in the database
@@ -340,7 +352,6 @@ def stop_urls(request):
     ret_val = ""
     session = None
     try:
-        #import pdb; pdb.set_trace()
         from gtfsdb import Stop, Block
         limit = request.params.get('limit')
         blocks = request.params.get('blocks')
@@ -362,6 +373,7 @@ def stop_urls(request):
         close_session(session)
     return ret_val
 
+
 def url_response(host, service, id, agency_id=None, extra="&detailed"):
     ''' return a url with id and other good stuff
     '''
@@ -373,17 +385,20 @@ def url_response(host, service, id, agency_id=None, extra="&detailed"):
     ret_val = url.format(host, service, id)
     return ret_val
 
+
 def dao_response(dao):
     ''' using a BaseDao object, send the data to a pyramid Reponse '''
     if dao is None:
         dao = data_not_found
     return json_response(json_data=dao.to_json(), status=dao.status_code)
 
+
 def json_response(json_data, mime='application/json', status=200):
     ''' @return Response() with content_type of 'application/json' '''
     if json_data is None:
         json_data = data_not_found.to_json()
     return Response(json_data, content_type=mime, status_int=status)
+
 
 def json_response_list(lst, mime='application/json', status=200):
     ''' @return Response() with content_type of 'application/json' '''
@@ -393,6 +408,7 @@ def json_response_list(lst, mime='application/json', status=200):
             jd = l.to_json()
             json_data.append(jd)
     return json_response(json_data, mime, status)
+
 
 def proxy_json(url, query_string):
     ''' will call a json url and send back response / error string...
@@ -408,6 +424,7 @@ def proxy_json(url, query_string):
 
     return ret_val
 
+
 def rollback_session(session):
     ''' rollback session '''
     if session:
@@ -416,6 +433,7 @@ def rollback_session(session):
         except Exception, e:
             log.info('ROLLBACK SESSION {0}'.format(e))
             pass
+
 
 def close_session(session):
     ''' close session '''
@@ -446,19 +464,22 @@ def get_planner():
         otp_url = CONFIG.get('otp_url')
         adverts = get_adverts()
         fares = get_fares()
-        TRIP_PLANNER = TripPlanner(otp_url=otp_url, adverts=adverts, fares=fares, solr=get_solr())
+        cancelled_routes = get_cancelled_routes()
+        TRIP_PLANNER = TripPlanner(otp_url=otp_url, solr=get_solr(), adverts=adverts, fares=fares, cancelled_routes=cancelled_routes)
     return TRIP_PLANNER
+
 
 ADVERTS = None
 def get_adverts():
     global ADVERTS
     if ADVERTS is None:
         url = CONFIG.get('advert_url')
-        timeout = object_utils.safe_int(CONFIG.get('avert_timeout_mins'))
+        timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
         if url:
             from ott.data.content import Adverts
             ADVERTS = Adverts(url, timeout)
     return ADVERTS
+
 
 FARES = None
 def get_fares():
@@ -469,3 +490,15 @@ def get_fares():
         FARES = Fares(fare_url)
     return FARES
 
+
+CANCELLED_ROUTES = None
+def get_cancelled_routes():
+    global CANCELLED_ROUTES
+    import pdb; pdb.set_trace()
+    if CANCELLED_ROUTES is None:
+        url = CONFIG.get('cancelled_routes_url')
+        timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
+        if url:
+            from ott.data.content import CancelledRoutes
+            CANCELLED_ROUTES = CancelledRoutes(url, timeout)
+    return CANCELLED_ROUTES
