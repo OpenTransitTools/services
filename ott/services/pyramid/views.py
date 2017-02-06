@@ -494,7 +494,7 @@ def get_fares():
 CANCELLED_ROUTES = None
 def get_cancelled_routes():
     global CANCELLED_ROUTES
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     if CANCELLED_ROUTES is None:
         url = CONFIG.get('cancelled_routes_url')
         timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
