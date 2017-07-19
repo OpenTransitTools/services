@@ -282,7 +282,7 @@ def solr(request):
     ret_val = None
     try:
         place = request.params.get('place')
-        rows  = request.params.get('rows')
+        rows = request.params.get('rows')
         s = get_solr().solr(place, rows)
         ret_val = s
     except IndexError, e:
