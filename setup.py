@@ -14,8 +14,8 @@ requires = [
 
     'sqlalchemy',
     'geoalchemy2',
-    'gtfsdb > 0.1.5',
     'psycopg2',
+    'gtfsdb',
 
     'pyramid',
     'waitress',
@@ -55,7 +55,7 @@ setup(
         'git+https://github.com/OpenTransitTools/geocoder.git#egg=ott.geocoder-0.1.0',
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
         'git+https://github.com/OpenTransitTools/data.git#egg=ott.data-0.1.0',
-        'git+https://github.com/OpenTransitTools/gtfsdb.git#egg=gtfsdb-1.0.0',
+        'git+https://github.com/OpenTransitTools/gtfsdb.git#egg=gtfsdb-0.1.7',
     ],
 
     license="Mozilla-derived (http://opentransittools.com)",
