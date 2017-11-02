@@ -17,7 +17,7 @@ requires = [
     'psycopg2',
     'gtfsdb',
 
-    'pyramid',
+    'pyramid < 1.8',
     'waitress',
     'pyramid_tm',
     'zope.sqlalchemy',
