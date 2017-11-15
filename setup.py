@@ -1,5 +1,4 @@
 import os
-import sys
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -18,9 +17,10 @@ requires = [
     'gtfsdb',
 
     'pyramid < 1.8',
-    'waitress',
     'pyramid_tm',
+    'pyramid_exclog',
     'zope.sqlalchemy',
+    'waitress',
 ]
 
 extras_require = dict(
@@ -28,13 +28,6 @@ extras_require = dict(
       '' if os.name == 'nt' or os.name == 'posix' else 'linesman'
     ],
 )
-
-#
-# eggs that you need if you're running a version of python lower than 2.7
-#
-if sys.version_info[:2] < (2, 7):
-    requires.extend(['argparse>=1.2.1', 'unittest2>=0.5.1'])
-
 
 setup(
     name='ott.services',
