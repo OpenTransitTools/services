@@ -1,47 +1,36 @@
-import logging
-log = logging.getLogger(__file__)
-
 from pyramid.config import Configurator
 import ott.utils.object_utils as obj
+
+import logging
+log = logging.getLogger(__file__)
 
 # database
 DB = None
 CONFIG = None
 ECHO = True
 
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    config = Configurator(settings=settings)
+
+    # logging config for pserve / wsgi
+    if settings and 'logging_config_file' in settings:
+        from pyramid.paster import setup_logging
+        setup_logging(settings['logging_config_file'])
+
     #import pdb; pdb.set_trace()
     global CONFIG
     global DB
     CONFIG = settings
     DB = connect(settings)
 
-    cfg = Configurator(settings=settings)
-    do_view_config(cfg)
-    return cfg.make_wsgi_app()
-
-
-def do_view_config(cfg):
-    ''' adds the views (see below) and static directories to pyramid's config
-        TODO: is there a better way to dot this (maybe via an .ini file)
-    '''
-
-    # for testing...
-    import stress
-    stress.do_view_config(cfg)
-    cfg.scan(package=stress)
-
-    # for generating stress test urls to the services (amoungst other uses)
-    import urls
-    urls.do_view_config(cfg)
-    cfg.scan(package=urls)
-
-    # web service end-points 
     import views
-    views.do_view_config(cfg)
-    cfg.scan(package=views)
+    config.include(views.do_view_config)
+    config.scan('ott.services.pyramid')
+
+    return config.make_wsgi_app()
 
 
 def olconnect(settings):
@@ -49,8 +38,8 @@ def olconnect(settings):
     s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
     g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
     log.info("Database(url={0}, schema={1}, is_geospatial={2})".format(u, s, g))
-    #import pdb; pdb.set_trace()
     return MyGtfsdb(url=u, schema=s, is_geospatial=g)
+
 
 def pyramid_to_gtfsdb_params(settings):
     global ECHO
@@ -59,6 +48,7 @@ def pyramid_to_gtfsdb_params(settings):
     g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
     ECHO = obj.safe_dict_val(settings, 'sqlalchemy.echo', False)
     return {'url':u, 'schema':s, 'is_geospatial':g}
+
 
 def connect(settings):
     #import pdb; pdb.set_trace()
@@ -110,4 +100,3 @@ class MyGtfsdb(Database):
 
         if self.is_sqlite:
             self.engine.connect().connection.connection.text_factory = str
-
