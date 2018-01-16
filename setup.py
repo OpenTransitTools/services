@@ -10,16 +10,11 @@ requires = [
     'ott.utils',
     'ott.geocoder',
     'ott.otp_client',
-
-    'sqlalchemy',
-    'geoalchemy2',
-    'psycopg2',
     'gtfsdb',
 
     'pyramid < 1.8',
     'pyramid_tm',
     'pyramid_exclog',
-    'zope.sqlalchemy',
     'waitress',
 ]
 
