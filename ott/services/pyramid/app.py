@@ -77,7 +77,7 @@ class MyGtfsdb(Database):
         try:
             from ott.data.gtfsrdb import model
             model.add_schema(val)
-        except:
+        except Exception as e:
             log.warn("gtfsrdb not available when trying to set schema {0}".format(val))
 
     @url.setter

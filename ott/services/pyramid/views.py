@@ -69,7 +69,7 @@ def routes(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -89,7 +89,7 @@ def route(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -109,7 +109,7 @@ def route_stops(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -129,7 +129,7 @@ def stop(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -149,7 +149,7 @@ def stops_near(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -171,7 +171,7 @@ def stop_schedule(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -201,7 +201,7 @@ def trip_schedule(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg
@@ -219,7 +219,7 @@ def plan_trip(request):
     except NoResultFound, e:
         log.warn(e)
         ret_val = dao_response(data_not_found)
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = dao_response(system_err_msg)
     finally:
@@ -236,7 +236,7 @@ def geocode(request):
     except IndexError, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = system_err_msg
     finally:
@@ -255,7 +255,7 @@ def atis_geocode(request):
     except IndexError, e:
         log.warn(e)
         ret_val = data_not_found
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = system_err_msg
     finally:
@@ -269,7 +269,7 @@ def geostr(request):
     try:
         place = request.params.get('place')
         ret_val = get_solr().geostr(place)
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = system_err_msg.status_message
     finally:
@@ -288,7 +288,7 @@ def solr(request):
     except IndexError, e:
         log.warn(e)
         ret_val = dao_response(data_not_found)
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = dao_response(system_err_msg)
     finally:
@@ -324,7 +324,7 @@ def route_urls(request):
         for r in routes:
             url = url_response(host, service, r['route_id'], r['agency_id'])
             ret_val = ret_val + url + "\n"
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg.status_message
@@ -365,7 +365,7 @@ def stop_urls(request):
         for r in stops:
             url = url_response(host, service, r['stop_id'])
             ret_val = ret_val + url + "\n"
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         rollback_session(session)
         ret_val = system_err_msg.status_message
@@ -416,7 +416,7 @@ def proxy_json(url, query_string):
     ret_val = None
     try:
         ret_val = json_utils.stream_json(url, query_string)
-    except Exception, e:
+    except Exception as e:
         log.warn(e)
         ret_val = system_err_msg.status_message
     finally:
@@ -430,7 +430,7 @@ def rollback_session(session):
     if session:
         try:
             session.rollback()
-        except Exception, e:
+        except Exception as e:
             log.info('ROLLBACK SESSION {0}'.format(e))
             pass
 
@@ -444,7 +444,7 @@ def close_session(session):
             session.commit()
             session.flush()
             session.close()
-        except Exception, e:
+        except Exception as e:
             log.info('CLOSE SESSION {0}'.format(e))
             pass
 
