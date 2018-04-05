@@ -375,8 +375,8 @@ def stop_urls(request):
 
 
 def url_response(host, service, id, agency_id=None, extra="&detailed"):
-    ''' return a url with id and other good stuff
-    '''
+    """ return a url with id and other good stuff
+    """
     url = "http://{}/{}?id={}"
     if agency_id:
         url = url + "&agency_id={}".format(agency_id)
@@ -387,21 +387,21 @@ def url_response(host, service, id, agency_id=None, extra="&detailed"):
 
 
 def dao_response(dao):
-    ''' using a BaseDao object, send the data to a pyramid Reponse '''
+    """ using a BaseDao object, send the data to a pyramid Reponse """
     if dao is None:
         dao = data_not_found
     return json_response(json_data=dao.to_json(), status=dao.status_code)
 
 
 def json_response(json_data, mime='application/json', status=200):
-    ''' @return Response() with content_type of 'application/json' '''
+    """ @return Response() with content_type of 'application/json' """
     if json_data is None:
         json_data = data_not_found.to_json()
     return Response(json_data, content_type=mime, status_int=status)
 
 
 def json_response_list(lst, mime='application/json', status=200):
-    ''' @return Response() with content_type of 'application/json' '''
+    """ @return Response() with content_type of 'application/json' """
     json_data = []
     for l in lst:
         if l:
@@ -411,8 +411,8 @@ def json_response_list(lst, mime='application/json', status=200):
 
 
 def proxy_json(url, query_string):
-    ''' will call a json url and send back response / error string...
-    '''
+    """ will call a json url and send back response / error string...
+    """
     ret_val = None
     try:
         ret_val = json_utils.stream_json(url, query_string)
@@ -426,7 +426,7 @@ def proxy_json(url, query_string):
 
 
 def rollback_session(session):
-    ''' rollback session '''
+    """ rollback session """
     if session:
         try:
             session.rollback()
@@ -436,7 +436,7 @@ def rollback_session(session):
 
 
 def close_session(session):
-    ''' close session '''
+    """ close session """
     return
     # NOTE: Pyramid TM is doing the closing for us
     if session:
@@ -494,7 +494,7 @@ def get_fares():
 CANCELLED_ROUTES = None
 def get_cancelled_routes():
     global CANCELLED_ROUTES
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     if CANCELLED_ROUTES is None:
         url = CONFIG.get('cancelled_routes_url')
         timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
