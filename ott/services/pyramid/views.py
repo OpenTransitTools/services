@@ -11,9 +11,9 @@ from ott.data.dao import RouteListDao
 from ott.data.dao import RouteStopListDao 
 from ott.data.dao import StopScheduleDao
 
-from ott.utils.parse import StopParamParser
-from ott.utils.parse import GeoParamParser
-from ott.utils.parse import RouteParamParser
+from ott.utils.parse.url import StopParamParser
+from ott.utils.parse.url import GeoParamParser
+from ott.utils.parse.url import RouteParamParser
 
 from ott.geocoder.geosolr import GeoSolr
 from ott.geocoder.geo_dao import GeoListDao
@@ -29,9 +29,9 @@ import logging
 log = logging.getLogger(__file__)
 
 
-### cache time - affects how long varnish cache will hold a copy of the data
-cache_long=36000  # 10 hours
-cache_short=600   # 10 minutes
+# cache time - affects how long varnish cache will hold a copy of the data
+cache_long = 36000  # 10 hours
+cache_short = 600   # 10 minutes
 
 system_err_msg = ServerError()
 data_not_found = DatabaseNotFound()

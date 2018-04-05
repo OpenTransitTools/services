@@ -5,7 +5,8 @@ import urllib
 import contextlib
 import json
 
-PORT="44444"
+
+PORT = "44444"
 
 
 class TestMyView(unittest.TestCase):
@@ -95,11 +96,13 @@ def get_url(svc_name, params=None):
         ret_val = "{0}?{1}".format(ret_val, params)
     return ret_val
 
+
 def call_url(url):
     print url
     with contextlib.closing(urllib.urlopen(url)) as f:
         ret_json = json.load(f)
     return ret_json
+
 
 def call_url_text(url):
     print url

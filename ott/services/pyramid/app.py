@@ -1,8 +1,9 @@
 from pyramid.config import Configurator
 import ott.utils.object_utils as obj
-
+from gtfsdb import Database
 import logging
 log = logging.getLogger(__file__)
+
 
 # database
 DB = None
@@ -20,7 +21,7 @@ def main(global_config, **settings):
         from pyramid.paster import setup_logging
         setup_logging(settings['logging_config_file'])
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     global CONFIG
     global DB
     CONFIG = settings
@@ -51,13 +52,12 @@ def pyramid_to_gtfsdb_params(settings):
 
 
 def connect(settings):
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     s=pyramid_to_gtfsdb_params(settings)
     log.info("Database({0})".format(s))
     return MyGtfsdb(**s)
 
 
-from gtfsdb import Database
 class MyGtfsdb(Database):
 
     @property
