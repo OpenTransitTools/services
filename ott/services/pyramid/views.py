@@ -11,9 +11,9 @@ from ott.data.dao import RouteListDao
 from ott.data.dao import RouteStopListDao 
 from ott.data.dao import StopScheduleDao
 
-from ott.utils.parse.url import StopParamParser
-from ott.utils.parse.url import GeoParamParser
-from ott.utils.parse.url import RouteParamParser
+from ott.utils.parse.url.stop_param_parser import StopParamParser
+from ott.utils.parse.url.geo_param_parser import GeoParamParser
+from ott.utils.parse.url.route_param_parser import RouteParamParser
 
 from ott.geocoder.geosolr import GeoSolr
 from ott.geocoder.geo_dao import GeoListDao

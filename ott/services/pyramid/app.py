@@ -1,6 +1,6 @@
 from pyramid.config import Configurator
-import ott.utils.object_utils as obj
 from gtfsdb import Database
+import ott.utils.object_utils as obj
 import logging
 log = logging.getLogger(__file__)
 
