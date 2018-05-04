@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from gtfsdb import Database
 import ott.utils.object_utils as obj
+from ott.utils import db_utils
 import logging
 log = logging.getLogger(__file__)
 
@@ -71,14 +72,12 @@ class MyGtfsdb(Database):
     @schema.setter
     def schema(self, val):
         self._schema = val
-        for cls in self.classes:
-            cls.__table__.schema = val
-
+        db_utils.add_schema(val, self.classes)
         try:
-            from ott.data.gtfsrdb import model
-            model.add_schema(val)
+            from ott.gtfsdb_realtime.model.base import Base
+            db_utils.add_schema(val, Base.__subclasses__())
         except Exception as e:
-            log.warn("gtfsrdb not available when trying to set schema {0}".format(val))
+            log.warn("gtfsdb_realtime not available when trying to set schema {0}".format(val))
 
     @url.setter
     def url(self, url):
