@@ -11,6 +11,7 @@ requires = [
     'ott.geocoder',
     'ott.otp_client',
     'gtfsdb',
+    'zope.sqlalchemy',
 
     'pyramid < 1.8',
     'pyramid_tm',
