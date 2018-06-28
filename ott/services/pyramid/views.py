@@ -22,12 +22,8 @@ from ott.otp_client.trip_planner import TripPlanner
 from ott.utils import json_utils
 from ott.utils import object_utils
 
-from app import DB
-from app import CONFIG
-
 import logging
 log = logging.getLogger(__file__)
-
 
 # cache time - affects how long varnish cache will hold a copy of the data
 cache_long = 36000  # 10 hours
@@ -35,6 +31,20 @@ cache_short = 600   # 10 minutes
 
 system_err_msg = ServerError()
 data_not_found = DatabaseNotFound()
+
+# database
+DB = None
+CONFIG = None
+
+
+def set_db(db):
+    global DB
+    DB = db
+
+
+def set_config(config):
+    global CONFIG
+    CONFIG = config
 
 
 def do_view_config(cfg):
