@@ -28,6 +28,7 @@ def main(global_config, **settings):
 
     # enable OTP (Transit Index) views
     from ott.otp_client.pyramid import views as otp_views
+    otp_views.CONFIG = settings
     config.include(otp_views.do_view_config)
     config.scan(otp_views.__name__)
 

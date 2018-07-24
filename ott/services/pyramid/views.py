@@ -17,10 +17,8 @@ from ott.utils.parse.url.route_param_parser import RouteParamParser
 
 from ott.geocoder.geosolr import GeoSolr
 from ott.geocoder.geo_dao import GeoListDao
-from ott.otp_client.trip_planner import TripPlanner
 
 from ott.utils import json_utils
-from ott.utils import object_utils
 
 import logging
 log = logging.getLogger(__file__)
@@ -48,9 +46,6 @@ def set_config(config):
 
 
 def do_view_config(cfg):
-    cfg.add_route('plan_trip',     '/plan_trip')
-    cfg.add_route('adverts',       '/adverts')
-
     cfg.add_route('geocode',       '/geocode')
     cfg.add_route('geostr',        '/geostr')
     cfg.add_route('solr',          '/solr')
@@ -220,23 +215,6 @@ def trip_schedule(request):
     return dao_response(ret_val)
 
 
-@view_config(route_name='plan_trip', renderer='json', http_cache=cache_short)
-def plan_trip(request):
-    ret_val = None
-    try:
-        trip = get_planner().plan_trip(request)
-        ret_val = json_response(trip)
-    except NoResultFound, e:
-        log.warn(e)
-        ret_val = dao_response(data_not_found)
-    except Exception as e:
-        log.warn(e)
-        ret_val = dao_response(system_err_msg)
-    finally:
-        pass
-    return ret_val
-
-
 @view_config(route_name='geocode', renderer='json', http_cache=cache_long)
 def geocode(request):
     ret_val = None
@@ -303,12 +281,6 @@ def solr(request):
         ret_val = dao_response(system_err_msg)
     finally:
         pass
-    return ret_val
-
-
-@view_config(route_name='adverts', renderer='json', http_cache=cache_short)
-def adverts(request):
-    ret_val = get_adverts().query_by_request(request)
     return ret_val
 
 
@@ -465,50 +437,3 @@ def get_solr():
     if SOLR is None:
         SOLR = GeoSolr(CONFIG.get('solr_url'))
     return SOLR
-
-
-TRIP_PLANNER = None
-def get_planner():
-    global TRIP_PLANNER
-    if TRIP_PLANNER is None:
-        otp_url = CONFIG.get('otp_url')
-        adverts = get_adverts()
-        fares = get_fares()
-        cancelled_routes = get_cancelled_routes()
-        TRIP_PLANNER = TripPlanner(otp_url=otp_url, solr=get_solr(), adverts=adverts, fares=fares, cancelled_routes=cancelled_routes)
-    return TRIP_PLANNER
-
-
-ADVERTS = None
-def get_adverts():
-    global ADVERTS
-    if ADVERTS is None:
-        url = CONFIG.get('advert_url')
-        timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
-        if url:
-            from ott.data.content import Adverts
-            ADVERTS = Adverts(url, timeout)
-    return ADVERTS
-
-
-FARES = None
-def get_fares():
-    global FARES
-    if FARES is None:
-        fare_url = CONFIG.get('fare_url')
-        from ott.data.content import Fares
-        FARES = Fares(fare_url)
-    return FARES
-
-
-CANCELLED_ROUTES = None
-def get_cancelled_routes():
-    global CANCELLED_ROUTES
-    # import pdb; pdb.set_trace()
-    if CANCELLED_ROUTES is None:
-        url = CONFIG.get('cancelled_routes_url')
-        timeout = object_utils.safe_int(CONFIG.get('timeout_mins'))
-        if url:
-            from ott.data.content import CancelledRoutes
-            CANCELLED_ROUTES = CancelledRoutes(url, timeout)
-    return CANCELLED_ROUTES
