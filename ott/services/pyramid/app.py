@@ -7,32 +7,26 @@ import logging
 log = logging.getLogger(__file__)
 ECHO = True
 
+from ott.utils.svr.pyramid.app_config import AppConfig
 
-def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application.
+
+def main(global_config, **config):
     """
-    config = Configurator(settings=settings)
-    db = connect(settings)
-
-    # logging config for pserve / wsgi
-    if settings and 'logging_config_file' in settings:
-        from pyramid.paster import setup_logging
-        setup_logging(settings['logging_config_file'])
+    this function is the main entry point for pserve / Pyramid
+    it returns a Pyramid WSGI application
+    see setup.py entry points + config/*.ini [app:main] ala pserve (e.g., bin/pserve config/development.ini)
+    """
+    app = AppConfig(**config)
+    db = connect(config)
 
     import views
-    views.set_config(settings)
-    views.set_db(db)
+    app.set_db(db)
+    app.config_include_scan(views)
 
-    config.include(views.do_view_config)
-    config.scan('ott.services.pyramid')
-
-    # enable OTP (Transit Index) views
     from ott.otp_client.pyramid import views as otp_views
-    otp_views.CONFIG = settings
-    config.include(otp_views.do_view_config)
-    config.scan(otp_views.__name__)
+    app.config_include_scan(otp_views)
 
-    return config.make_wsgi_app()
+    return app.make_wsgi_app()
 
 
 def olconnect(settings):
