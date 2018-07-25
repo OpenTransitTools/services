@@ -3,11 +3,10 @@ from gtfsdb import Database
 from ott.utils import object_utils
 from ott.utils import db_utils
 
+from ott.utils.svr.pyramid.app_config import AppConfig
+
 import logging
 log = logging.getLogger(__file__)
-ECHO = True
-
-from ott.utils.svr.pyramid.app_config import AppConfig
 
 
 def main(global_config, **config):
@@ -36,7 +35,7 @@ def olconnect(settings):
     log.info("Database(url={0}, schema={1}, is_geospatial={2})".format(u, s, g))
     return MyGtfsdb(url=u, schema=s, is_geospatial=g)
 
-
+ECHO = True
 def pyramid_to_gtfsdb_params(settings):
     global ECHO
     u = object_utils.safe_dict_val(settings, 'sqlalchemy.url')

@@ -9,16 +9,17 @@ from ott.data.dao import RouteListDao
 from ott.data.dao import RouteStopListDao 
 from ott.data.dao import StopScheduleDao
 
+from ott.geocoder.geosolr import GeoSolr
+from ott.geocoder.geo_dao import GeoListDao
+
 from ott.utils.parse.url.stop_param_parser import StopParamParser
 from ott.utils.parse.url.geo_param_parser import GeoParamParser
 from ott.utils.parse.url.route_param_parser import RouteParamParser
+
 from ott.utils import json_utils
 
 from ott.utils.svr.pyramid import response_utils
 from ott.utils.svr.pyramid.globals import *
-
-from ott.geocoder.geosolr import GeoSolr
-from ott.geocoder.geo_dao import GeoListDao
 
 import logging
 log = logging.getLogger(__file__)
