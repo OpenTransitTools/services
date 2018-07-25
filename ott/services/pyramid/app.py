@@ -25,6 +25,9 @@ def main(global_config, **config):
     from ott.otp_client.pyramid import views as otp_views
     app.config_include_scan(otp_views)
 
+    from ott.gtfsdb_realtime.pyramid import views as rt_views
+    app.config_include_scan(rt_views)
+
     return app.make_wsgi_app()
 
 
@@ -82,6 +85,8 @@ class MyGtfsdb(Database):
         from sqlalchemy.orm import scoped_session
         from sqlalchemy.orm import sessionmaker
         self.session = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+
+        ### TODO ^^^ refactor this so we can replace self.session_maker with the Zope junk, etc...
 
         # create the engine
         from sqlalchemy import create_engine
