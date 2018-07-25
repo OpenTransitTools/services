@@ -2,8 +2,6 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.orm.exc import NoResultFound
 
-from ott.data.dao import DatabaseNotFound
-from ott.data.dao import ServerError
 from ott.data.dao import StopDao
 from ott.data.dao import StopListDao
 from ott.data.dao import RouteDao
@@ -14,20 +12,16 @@ from ott.data.dao import StopScheduleDao
 from ott.utils.parse.url.stop_param_parser import StopParamParser
 from ott.utils.parse.url.geo_param_parser import GeoParamParser
 from ott.utils.parse.url.route_param_parser import RouteParamParser
+from ott.utils import json_utils
 
+from ott.utils.svr.pyramid import response_utils
 from ott.utils.svr.pyramid.globals import *
 
 from ott.geocoder.geosolr import GeoSolr
 from ott.geocoder.geo_dao import GeoListDao
 
-from ott.utils import json_utils
-
 import logging
 log = logging.getLogger(__file__)
-
-
-system_err_msg = ServerError()
-data_not_found = DatabaseNotFound()
 
 
 APP_CONFIG=None
@@ -66,16 +60,16 @@ def routes(request):
     try:
         session = APP_CONFIG.get_db().session()
         ret_val = RouteListDao.route_list(session)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='route', renderer='json', http_cache=CACHE_LONG)
@@ -86,16 +80,16 @@ def route(request):
         session = APP_CONFIG.get_db().session()
         rp = RouteParamParser(request)
         ret_val = RouteDao.from_route_id(session, rp.route_id)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='route_stops', renderer='json', http_cache=CACHE_LONG)
@@ -106,16 +100,16 @@ def route_stops(request):
         session = APP_CONFIG.get_db().session()
         params = RouteParamParser(request)
         ret_val = RouteStopListDao.from_params(session, params)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='stop', renderer='json', http_cache=CACHE_LONG)
@@ -126,16 +120,16 @@ def stop(request):
         session = APP_CONFIG.get_db().session()
         params = StopParamParser(request)
         ret_val = StopDao.from_stop_params(session, params)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='stops_near', renderer='json', http_cache=CACHE_LONG)
@@ -146,16 +140,16 @@ def stops_near(request):
         session = APP_CONFIG.get_db().session()
         gp = GeoParamParser(request)
         ret_val = StopListDao.nearest_stops(session, geo_params=gp)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='stop_schedule', renderer='json', http_cache=CACHE_SHORT)
@@ -168,16 +162,16 @@ def stop_schedule(request):
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
         if ret_val.stop is None:
             ret_val.has_errors = True
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='trip_schedule', renderer='json', http_cache=CACHE_SHORT)
@@ -199,28 +193,29 @@ def trip_schedule(request):
         session = APP_CONFIG.get_db().session()
         sp = StopParamParser(request)
         ret_val = TripScheduleDao.get_trip_schedule_from_params(session, sp)
-    except NoResultFound, e:
+    except NoResultFound as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         close_session(session)
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='route_urls', renderer='string', http_cache=CACHE_SHORT)
 def route_urls(request):
-    """ return a list of urls based on route ids in the database
-        params are 'host' and 'service' ... see how they're used below
+    """
+    return a list of urls based on route ids in the database
+    params are 'host' and 'service' ... see how they're used below
 
-        service urls:
-          http://localhost:44444/route_urls
-          http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride_ws/route_stops
-        html pages:
-          http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride/stop_select_list.html
+    service urls:
+        http://localhost:44444/route_urls
+        http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride_ws/route_stops
+    html pages:
+        http://localhost:44444/route_urls?host=maps7.trimet.org&service=ride/stop_select_list.html
     """
     ret_val = ""
     session = None
@@ -236,7 +231,7 @@ def route_urls(request):
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg.status_message
+        ret_val = SYSTEM_ERROR_MSG.status_message
     finally:
         close_session(session)
     return ret_val
@@ -244,16 +239,17 @@ def route_urls(request):
 
 @view_config(route_name='stop_urls', renderer='string', http_cache=CACHE_SHORT)
 def stop_urls(request):
-    """ return a list of urls based on stop ids in the database
-        params are 'host' and 'service' ... see how they're used below
+    """
+    return a list of urls based on stop ids in the database
+    params are 'host' and 'service' ... see how they're used below
 
-        service urls:
+    service urls:
           http://localhost:44444/stop_urls
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop_schedule
           http://localhost:44444/stop_urls?host=maps7.trimet.org&service=ride_ws/stop_schedule&blocks=t
 
-        html pages:
+    html pages:
           http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop.html
           http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop_schedule.html
           http://localhost:44444/stop_urls?host=trimet.org&service=ride/stop_schedule.html&blocks=t
@@ -277,60 +273,22 @@ def stop_urls(request):
     except Exception as e:
         log.warn(e)
         rollback_session(session)
-        ret_val = system_err_msg.status_message
+        ret_val = SYSTEM_ERROR_MSG.status_message
     finally:
         close_session(session)
     return ret_val
 
 
 def url_response(host, service, id, agency_id=None, extra="&detailed"):
-    """ return a url with id and other good stuff
+    """
+    return a url with id and other good stuff
     """
     url = "http://{}/{}?id={}"
     if agency_id:
-        url = url + "&agency_id={}".format(agency_id)
+        url = "{}&agency_id={}".format(url, agency_id)
     if extra:
         url = url + extra
     ret_val = url.format(host, service, id)
-    return ret_val
-
-
-def dao_response(dao):
-    """ using a BaseDao object, send the data to a pyramid Reponse """
-    if dao is None:
-        dao = data_not_found
-    return json_response(json_data=dao.to_json(), status=dao.status_code)
-
-
-def json_response(json_data, mime='application/json', status=200):
-    """ @return Response() with content_type of 'application/json' """
-    if json_data is None:
-        json_data = data_not_found.to_json()
-    return Response(json_data, content_type=mime, status_int=status)
-
-
-def json_response_list(lst, mime='application/json', status=200):
-    """ @return Response() with content_type of 'application/json' """
-    json_data = []
-    for l in lst:
-        if l:
-            jd = l.to_json()
-            json_data.append(jd)
-    return json_response(json_data, mime, status)
-
-
-def proxy_json(url, query_string):
-    """ will call a json url and send back response / error string...
-    """
-    ret_val = None
-    try:
-        ret_val = json_utils.stream_json(url, query_string)
-    except Exception as e:
-        log.warn(e)
-        ret_val = system_err_msg.status_message
-    finally:
-        pass
-
     return ret_val
 
 
@@ -362,15 +320,15 @@ def geocode(request):
     try:
         place = request.params.get('place')
         ret_val = get_solr().geocode(place)
-    except IndexError, e:
+    except IndexError as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         pass
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='atis_geocode', renderer='json', http_cache=CACHE_LONG)
@@ -381,15 +339,15 @@ def atis_geocode(request):
         qs  = request.query_string
         doc = json_utils.stream_json(url, qs)
         ret_val = GeoListDao.make_geo_list_dao(doc)
-    except IndexError, e:
+    except IndexError as e:
         log.warn(e)
-        ret_val = data_not_found
+        ret_val = DATA_NOT_FOUND_MSG
     except Exception as e:
         log.warn(e)
-        ret_val = system_err_msg
+        ret_val = SYSTEM_ERROR_MSG
     finally:
         pass
-    return dao_response(ret_val)
+    return response_utils.dao_response(ret_val)
 
 
 @view_config(route_name='geostr', renderer='string', http_cache=CACHE_LONG)
@@ -400,7 +358,7 @@ def geostr(request):
         ret_val = get_solr().geostr(place)
     except Exception as e:
         log.warn(e)
-        ret_val = system_err_msg.status_message
+        ret_val = SYSTEM_ERROR_MSG.status_message
     finally:
         pass
     return ret_val
@@ -414,12 +372,12 @@ def solr(request):
         rows = request.params.get('rows')
         s = get_solr().solr(place, rows)
         ret_val = s
-    except IndexError, e:
+    except IndexError as e:
         log.warn(e)
-        ret_val = dao_response(data_not_found)
+        ret_val = response_utils.data_not_found_response()
     except Exception as e:
         log.warn(e)
-        ret_val = dao_response(system_err_msg)
+        ret_val = response_utils.sys_error_response()
     finally:
         pass
     return ret_val
