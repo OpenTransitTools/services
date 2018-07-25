@@ -47,7 +47,7 @@ def pyramid_to_gtfsdb_params(settings):
 
 def connect(settings):
     # import pdb; pdb.set_trace()
-    s=pyramid_to_gtfsdb_params(settings)
+    s = pyramid_to_gtfsdb_params(settings)
     log.info("Database({0})".format(s))
     return MyGtfsdb(**s)
 
