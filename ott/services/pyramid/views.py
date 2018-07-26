@@ -336,7 +336,7 @@ def geocode(request):
 def atis_geocode(request):
     ret_val = None
     try:
-        url = APP_CONFIG.config.get('atis_url')
+        url = APP_CONFIG.ini_settings.get('atis_url')
         qs  = request.query_string
         doc = json_utils.stream_json(url, qs)
         ret_val = GeoListDao.make_geo_list_dao(doc)
@@ -389,7 +389,7 @@ def get_solr():
     # import pdb; pdb.set_trace()
     global SOLR
     if SOLR is None:
-        SOLR = GeoSolr(APP_CONFIG.config.get('solr_url'))
+        SOLR = GeoSolr(APP_CONFIG.ini_settings.get('solr_url'))
     return SOLR
 
 

@@ -9,14 +9,14 @@ import logging
 log = logging.getLogger(__file__)
 
 
-def main(global_config, **config):
+def main(global_config, **ini_settings):
     """
     this function is the main entry point for pserve / Pyramid
     it returns a Pyramid WSGI application
     see setup.py entry points + config/*.ini [app:main] ala pserve (e.g., bin/pserve config/development.ini)
     """
-    app = AppConfig(**config)
-    db = connect(config)
+    app = AppConfig(**ini_settings)
+    db = connect(ini_settings)
 
     import views
     app.set_db(db)
