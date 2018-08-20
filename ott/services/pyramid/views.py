@@ -59,7 +59,7 @@ def routes(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         ret_val = RouteListDao.route_list(session)
     except NoResultFound as e:
         log.warn(e)
@@ -78,7 +78,7 @@ def route(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         rp = RouteParamParser(request)
         ret_val = RouteDao.from_route_id(session, rp.route_id)
     except NoResultFound as e:
@@ -98,7 +98,7 @@ def route_stops(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         params = RouteParamParser(request)
         ret_val = RouteStopListDao.from_params(session, params)
     except NoResultFound as e:
@@ -118,7 +118,7 @@ def stop(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         params = StopParamParser(request)
         ret_val = StopDao.from_stop_params(session, params)
     except NoResultFound as e:
@@ -138,7 +138,7 @@ def stops_near(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         gp = GeoParamParser(request)
         ret_val = StopListDao.nearest_stops(session, geo_params=gp)
     except NoResultFound as e:
@@ -158,7 +158,7 @@ def stop_schedule(request):
     ret_val = None
     session = None
     try:
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         sp = StopParamParser(request)
         ret_val = StopScheduleDao.get_stop_schedule_from_params(session, sp)
         if ret_val.stop is None:
@@ -191,7 +191,7 @@ def trip_schedule(request):
     session = None
     try:
         from ott.data.dao import TripScheduleDao # TODO
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         sp = StopParamParser(request)
         ret_val = TripScheduleDao.get_trip_schedule_from_params(session, sp)
     except NoResultFound as e:
@@ -222,7 +222,7 @@ def route_urls(request):
     session = None
     try:
         from gtfsdb import Route
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         routes = Route.active_route_ids(session)
         host = request.params.get('host', request.host)
         service = request.params.get('service', 'route')
@@ -263,7 +263,7 @@ def stop_urls(request):
         blocks = request.params.get('blocks')
         host = request.params.get('host', request.host)
         service = request.params.get('service', 'route')
-        session = APP_CONFIG.get_db().session()
+        session = APP_CONFIG.db.session()
         if blocks:
             stops = Block.active_stop_ids(session, limit)
         else:
