@@ -18,7 +18,7 @@ def main(global_config, **ini_settings):
     app = AppConfig(**ini_settings)
     db = connect(ini_settings)
 
-    import views
+    from . import views
     app.set_db(db)
     app.config_include_scan(views)
 
