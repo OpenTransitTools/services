@@ -21,6 +21,7 @@ logs/*.*
 *~
 *.bak
 x
+scripts
 
 *.properties
 *.classpath
