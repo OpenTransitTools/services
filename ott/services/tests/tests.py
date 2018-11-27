@@ -98,12 +98,12 @@ def get_url(svc_name, params=None):
 
 
 def call_url(url):
-    print url
+    print(url)
     with contextlib.closing(urllib.urlopen(url)) as f:
         ret_json = json.load(f)
     return ret_json
 
 
 def call_url_text(url):
-    print url
+    print(url)
     return urllib.urlopen(url).read()

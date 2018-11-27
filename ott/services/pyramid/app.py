@@ -1,4 +1,3 @@
-from pyramid.config import Configurator
 from gtfsdb import Database
 from ott.utils import object_utils
 from ott.utils import db_utils
@@ -31,12 +30,20 @@ def main(global_config, **ini_settings):
     return app.make_wsgi_app()
 
 
+def connect(settings):
+    # import pdb; pdb.set_trace()
+    s = pyramid_to_gtfsdb_params(settings)
+    log.info("Database({0})".format(s))
+    return MyGtfsdb(**s)
+
+
 def olconnect(settings):
     u = object_utils.safe_dict_val(settings, 'sqlalchemy.url')
     s = object_utils.safe_dict_val(settings, 'sqlalchemy.schema')
     g = object_utils.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
     log.info("Database(url={0}, schema={1}, is_geospatial={2})".format(u, s, g))
     return MyGtfsdb(url=u, schema=s, is_geospatial=g)
+
 
 ECHO = True
 def pyramid_to_gtfsdb_params(settings):
@@ -46,13 +53,6 @@ def pyramid_to_gtfsdb_params(settings):
     g = object_utils.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
     ECHO = object_utils.safe_dict_val(settings, 'sqlalchemy.echo', False)
     return {'url':u, 'schema':s, 'is_geospatial':g}
-
-
-def connect(settings):
-    # import pdb; pdb.set_trace()
-    s = pyramid_to_gtfsdb_params(settings)
-    log.info("Database({0})".format(s))
-    return MyGtfsdb(**s)
 
 
 class MyGtfsdb(Database):
