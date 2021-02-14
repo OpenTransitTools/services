@@ -14,10 +14,11 @@ requires = [
     'gtfsdb',
     'zope.sqlalchemy',
 
+    'venusian==1.2.0',
+    'waitress==1.4.3',
     'pyramid',
     'pyramid_tm',
     'pyramid_exclog',
-    'waitress',
 ]
 
 extras_require = dict(
